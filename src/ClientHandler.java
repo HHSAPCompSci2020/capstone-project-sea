@@ -37,12 +37,12 @@ public class ClientHandler implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		/*try {
+		try {
 			socket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("closed");*/
+		System.out.println("closed");
 	}
 	
 	private void broadcast(String message) {

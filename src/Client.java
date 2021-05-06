@@ -11,8 +11,8 @@ public class Client {
 		// private 192.168.0.22
 		// public 98.210.100.211
 		String host = "localhost";
-		int port = 9000;
-		
+		int port = 9002;
+
 		Socket socket = new Socket(host, port);
 		PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -30,7 +30,7 @@ public class Client {
 					}
 				}
 			}
-			
+
 		});
 		Thread output = new Thread(new Runnable() {
 			@Override
@@ -44,7 +44,7 @@ public class Client {
 					}
 				}
 			}
-			
+
 		});
 		input.start();
 		output.start();

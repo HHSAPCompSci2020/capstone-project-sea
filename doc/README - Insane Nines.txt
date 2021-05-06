@@ -60,10 +60,12 @@ Class List:
 
 Card - One of the 52 cards with a rank and suit
 Deck - A deck of cards
+DrawingSurface - The surface used to draw the graphics
 Main - The main class that is ran to start the game and use other classes
 Server - The hosted server which clients connect to
 ClientHandler - A separate thread to handle each client
-Client - A player that connects to a server
+Client - A client that connects to a server
+Player - A player that utilizes the client class to communicate with the server
 
 
 Credits:

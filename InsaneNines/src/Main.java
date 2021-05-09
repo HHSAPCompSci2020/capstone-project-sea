@@ -33,8 +33,8 @@ public class Main implements ActionListener{
 		game = new JPanel();
 		l = new JLabel("Waiting for players... Player 1 (you)");
 		
-		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
-		f.setContentPane(new JLabel(new ImageIcon(img)));
+//		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
+//		f.setContentPane(new JLabel(new ImageIcon(img)));
 		
 //		f.setLayout(null);
 		
@@ -60,7 +60,7 @@ public class Main implements ActionListener{
 
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
-		f.setSize(800,600);
+		f.setSize(500,400);
 
 
 		createServer.addActionListener(new ActionListener() {

@@ -13,7 +13,7 @@ import javax.swing.*;
 public class Main implements ActionListener{
 
 	public static final int GAME_SIZE = 750;
-
+//	public static String password;
 	private JFrame f;
 	private JPanel menu, waitRoom, game;
 	private JButton createServer, joinServer, tutorial, back;
@@ -23,6 +23,8 @@ public class Main implements ActionListener{
 		//Server server = new Server();
 		//server.run();
 		
+		
+		
 		f = new JFrame("Welcome Screen");
 		createServer = new JButton("Create Server");
 		joinServer = new JButton("Join Server");
@@ -31,17 +33,12 @@ public class Main implements ActionListener{
 		menu = new JPanel();
 		waitRoom = new JPanel();
 		game = new JPanel();
-<<<<<<< Updated upstream
-		l = new JLabel("Waiting for players... Player 1 (you)");
+		l = new JLabel("Waiting for players... ");
 		
 //		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
 //		f.setContentPane(new JLabel(new ImageIcon(img)));
 		
 //		f.setLayout(null);
-=======
-		l = new JLabel("Waiting for players...");
-
->>>>>>> Stashed changes
 		
 		menu.setLayout(null);
 		createServer.setBounds(40, 80, 400, 40);
@@ -55,9 +52,10 @@ public class Main implements ActionListener{
 		menu.setBackground(Color.WHITE);
 		f.add(menu);
 		
+		
 		waitRoom.setLayout(null);
 		back.setBounds(350, 300, 100, 40);
-		l.setBounds(40, 40, 400, 40);
+		l.setBounds(40, 200, 400, 40);
 		//update player count in the label later
 		waitRoom.add(back);
 		waitRoom.add(l);

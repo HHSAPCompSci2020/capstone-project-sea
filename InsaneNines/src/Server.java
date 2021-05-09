@@ -11,7 +11,7 @@ public class Server implements Runnable {
 	private List<ClientHandler> handlers;
 	
 	public Server() {
-		port = 9002;
+		port = 9005;
 		minClients = 2;
 		maxClients = 4;
 		handlers = new ArrayList<ClientHandler>();

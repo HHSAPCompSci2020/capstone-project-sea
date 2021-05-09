@@ -11,7 +11,7 @@ public class Client {
 		// private 192.168.0.22
 		// public 98.210.100.211
 		String host = "localhost";
-		int port = 9002;
+		int port = 9005;
 
 		Socket socket = new Socket(host, port);
 		PrintWriter out = new PrintWriter(socket.getOutputStream(), true);

@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 
 public class Main extends JPanel{
 
-	public static String ipAddress;
+	public static String password;
 	
 	public static void main(String[] args) {
 //		Server server = new Server();
@@ -27,7 +27,7 @@ public class Main extends JPanel{
 		JButton button = new JButton("Start");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ipAddress = JOptionPane.showInputDialog("Enter ip address");
+				password = JOptionPane.showInputDialog("Enter Room Key");
 			}
 		}
 		

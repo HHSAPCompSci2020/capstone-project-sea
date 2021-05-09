@@ -23,8 +23,6 @@ public class Main implements ActionListener{
 		//Server server = new Server();
 		//server.run();
 		
-		
-		
 		f = new JFrame("Welcome Screen");
 		createServer = new JButton("Create Server");
 		joinServer = new JButton("Join Server");
@@ -55,8 +53,8 @@ public class Main implements ActionListener{
 		
 		waitRoom.setLayout(null);
 		back.setBounds(350, 300, 100, 40);
-		l.setBounds(40, 200, 400, 40);
-		//update player count in the label later
+		l.setBounds(40, 40, 400, 40);
+		//update player label when players join
 		waitRoom.add(back);
 		waitRoom.add(l);
 		waitRoom.setBackground(Color.WHITE);
@@ -76,6 +74,7 @@ public class Main implements ActionListener{
 
 		joinServer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//pop up window
 			}
 		});
 

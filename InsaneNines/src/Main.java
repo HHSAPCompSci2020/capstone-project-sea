@@ -2,6 +2,12 @@ import java.awt.Color;
 import javax.swing.JFrame;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class Main implements ActionListener{
@@ -13,10 +19,10 @@ public class Main implements ActionListener{
 	private JButton createServer, joinServer, tutorial, back;
 	private JLabel l;
 
-	public Main() {
+	public Main() throws IOException {
 		//Server server = new Server();
 		//server.run();
-
+		
 		f = new JFrame("Welcome Screen");
 		createServer = new JButton("Create Server");
 		joinServer = new JButton("Join Server");
@@ -26,18 +32,23 @@ public class Main implements ActionListener{
 		waitRoom = new JPanel();
 		game = new JPanel();
 		l = new JLabel("Waiting for players... Player 1 (you)");
-
+		
+		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
+		f.setContentPane(new JLabel(new ImageIcon(img)));
+		
+//		f.setLayout(null);
 		
 		menu.setLayout(null);
 		createServer.setBounds(40, 80, 400, 40);
 		joinServer.setBounds(40, 140, 400, 40);
 		tutorial.setBounds(40, 200, 400, 40);
+		
 		menu.add(createServer);
 		menu.add(joinServer);
 		menu.add(tutorial);
+	
 		menu.setBackground(Color.WHITE);
 		f.add(menu);
-		
 		
 		waitRoom.setLayout(null);
 		back.setBounds(350, 300, 100, 40);
@@ -46,11 +57,10 @@ public class Main implements ActionListener{
 		waitRoom.add(back);
 		waitRoom.add(l);
 		waitRoom.setBackground(Color.WHITE);
-		
 
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
-		f.setSize(500,400);
+		f.setSize(800,600);
 
 
 		createServer.addActionListener(new ActionListener() {
@@ -80,8 +90,6 @@ public class Main implements ActionListener{
 		});
 
 
-
-
 	}
 
 	@Override
@@ -90,7 +98,7 @@ public class Main implements ActionListener{
 
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		new Main();
 
 	}

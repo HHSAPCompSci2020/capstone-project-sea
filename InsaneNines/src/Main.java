@@ -74,7 +74,11 @@ public class Main implements ActionListener{
 
 		joinServer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//pop up window
+				String ipAddress = JOptionPane.showInputDialog("Enter ip address");
+				//join room that matches ip address
+				f.setContentPane(waitRoom);
+				f.invalidate();
+				f.validate();
 			}
 		});
 

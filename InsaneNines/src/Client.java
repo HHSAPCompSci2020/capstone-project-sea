@@ -1,52 +1,54 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Client {
+	private Socket socket;
+	private String host;
+	private int port;
+	private ClientReader reader;
+	private ClientWriter writer;
+	private NetworkListener listener;
 
-	public static void main(String[] args) throws UnknownHostException, IOException {
+	public Client(String host) {
 		// private 192.168.0.22
 		// public 98.210.100.211
-		String host = "localhost";
-		int port = 9005;
-
-		Socket socket = new Socket(host, port);
-		PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-		Thread input = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						String message = stdin.readLine();
-						if (message != null)
-							out.println(message);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-
-		});
-		Thread output = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						String message = in.readLine();
-						System.out.println(message);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-
-		});
-		input.start();
-		output.start();
+		this.host = host;
+		port = 9005;
+	}
+	
+	public synchronized boolean connect() {
+		try {
+			socket = new Socket(host, port);
+			reader = new ClientReader(socket);
+			writer = new ClientWriter(socket);
+			reader.setListener(listener);
+			reader.start();
+			writer.start();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			return false;
+		} catch (IOException e) {
+			e.printStackTrace();
+			disconnect();
+			return false;
+		}
+		return true;
+	}
+	
+	public synchronized void disconnect() {
+		reader.stop();
+		writer.stop();
+	}
+	
+	public synchronized void sendMessage(String messageType, Object... message) {
+		DataObject data = new DataObject();
+		data.messageType = messageType;
+		data.message = message;
+		writer.sendMessage(data);
+	}
+	
+	public synchronized void setListener(NetworkListener listener) {
+		this.listener = listener;
 	}
 }

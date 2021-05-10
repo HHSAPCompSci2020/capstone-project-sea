@@ -7,9 +7,7 @@ public class DataObject implements Serializable {
 	
 	public static final String START = "START";
 	
-	public static final String YOUR_TURN = "YOUR_TURN";
-	
-	public static final String END_TURN = "END_TURN";
+	public static final String TURN = "TURN";
 	
 	public static final String PLAY = "PLAY";
 	

@@ -15,9 +15,9 @@ public class Main implements ActionListener{
 	public static final int GAME_SIZE = 750;
 //	public static String password;
 	private JFrame f;
-	private JPanel menu, waitRoom, game;
-	private JButton createServer, joinServer, tutorial, back;
-	private JLabel l;
+	private JPanel menu, waitRoom, game, instructionsTab;
+	private JButton createServer, joinServer, instructions, back;
+	private JLabel l, l2;
 
 	public Main() throws IOException {
 		//Server server = new Server();
@@ -26,26 +26,23 @@ public class Main implements ActionListener{
 		f = new JFrame("Welcome Screen");
 		createServer = new JButton("Create Server");
 		joinServer = new JButton("Join Server");
-		tutorial = new JButton("Tutorial");
+		instructions = new JButton("instructions");
 		back = new JButton("Back");
 		menu = new JPanel();
 		waitRoom = new JPanel();
 		game = new JPanel();
+		instructionsTab = new JPanel();
 		l = new JLabel("Waiting for players... ");
 		
-//		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
-//		f.setContentPane(new JLabel(new ImageIcon(img)));
-		
-//		f.setLayout(null);
-		
+
 		menu.setLayout(null);
 		createServer.setBounds(40, 80, 400, 40);
 		joinServer.setBounds(40, 140, 400, 40);
-		tutorial.setBounds(40, 200, 400, 40);
+		instructions.setBounds(40, 200, 400, 40);
 		
 		menu.add(createServer);
 		menu.add(joinServer);
-		menu.add(tutorial);
+		menu.add(instructions);
 	
 		menu.setBackground(Color.WHITE);
 		f.add(menu);
@@ -58,6 +55,10 @@ public class Main implements ActionListener{
 		waitRoom.add(back);
 		waitRoom.add(l);
 		waitRoom.setBackground(Color.WHITE);
+		
+		instructionsTab.setLayout(null);
+		
+		instructionsTab.setBackground(Color.WHITE);
 
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
@@ -82,8 +83,11 @@ public class Main implements ActionListener{
 			}
 		});
 
-		tutorial.addActionListener(new ActionListener() {
+		instructions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				f.setContentPane(instructionsTab);
+				f.invalidate();
+				f.validate();
 			}
 		});
 

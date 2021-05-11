@@ -49,19 +49,15 @@ public class ClientHandler implements Runnable {
 							Deck played = server.getPlayed();
 							if (Card.isValid(card, played.getTop())) {
 								played.addCard(card);
-								DataObject next = new DataObject();
-								next.messageType = DataObject.END_TURN;
-								next.message = new Object[] {};
-								out.writeObject(next);
-								out.flush();
 								AtomicInteger turn = server.getTurn();
 								turn.set((turn.get()+1)%server.getHandlers().size());
-								DataObject next2 = new DataObject();
-								next2.messageType = DataObject.YOUR_TURN;
-								next2.message = new Object[] {card};
-								ClientHandler ch = server.getHandlers().get(turn.get());
-								ch.out.writeObject(next2);
-								ch.out.flush();
+								for (ClientHandler ch : server.getHandlers()) {
+									DataObject next = new DataObject();
+									next.messageType = DataObject.TURN;
+									next.message = new Object[] {turn.get(), card};
+									ch.out.writeObject(next);
+									ch.out.flush();
+								}
 							}
 						} else if (data.messageType.equals(DataObject.DRAW)) {
 							Deck draw = server.getDraw();
@@ -98,11 +94,13 @@ public class ClientHandler implements Runnable {
 									ch.out.writeObject(next);
 									ch.out.flush();
 								}
-								DataObject next = new DataObject();
-								next.messageType = DataObject.YOUR_TURN;
-								next.message = new Object[] {server.getPlayed().getTop()};
-								out.writeObject(next);
-								out.flush();
+								for (ClientHandler ch : server.getHandlers()) {
+									DataObject next = new DataObject();
+									next.messageType = DataObject.TURN;
+									next.message = new Object[] {server.getTurn().get(), server.getPlayed().getTop()};
+									ch.out.writeObject(next);
+									ch.out.flush();
+								}
 							}
 						} else if (data.messageType.equals(DataObject.DISCONNECT)) {
 							for (ClientHandler ch : server.getHandlers()) {

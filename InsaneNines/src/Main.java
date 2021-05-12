@@ -1,23 +1,37 @@
 import java.awt.Color;
 import javax.swing.JFrame;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
+
+import Game.Player;
+import Network.Client;
+import Network.DataObject;
+import Network.NetworkListener;
+import Network.Server;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.concurrent.ExecutionException;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-public class Main implements ActionListener{
+public class Main implements ActionListener, NetworkListener {
 
 	public static final int GAME_SIZE = 750;
 //	public static String password;
 	private JFrame f;
-	private JPanel menu, waitRoom, game, instructionsTab;
-	private JButton createServer, joinServer, instructions, back;
-	private JLabel l, l2;
+	private JPanel menu, waitRoom, game;
+	private JButton createServer, joinServer, tutorial, back;
+	private JLabel l;
+	private Server s;
+	private Client c;
+	private Player p;
 
 	public Main() throws IOException {
 		//Server server = new Server();
@@ -26,23 +40,26 @@ public class Main implements ActionListener{
 		f = new JFrame("Welcome Screen");
 		createServer = new JButton("Create Server");
 		joinServer = new JButton("Join Server");
-		instructions = new JButton("instructions");
+		tutorial = new JButton("Tutorial");
 		back = new JButton("Back");
 		menu = new JPanel();
 		waitRoom = new JPanel();
 		game = new JPanel();
-		instructionsTab = new JPanel();
 		l = new JLabel("Waiting for players... ");
 		
-
+//		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
+//		f.setContentPane(new JLabel(new ImageIcon(img)));
+		
+//		f.setLayout(null);
+		
 		menu.setLayout(null);
 		createServer.setBounds(40, 80, 400, 40);
 		joinServer.setBounds(40, 140, 400, 40);
-		instructions.setBounds(40, 200, 400, 40);
+		tutorial.setBounds(40, 200, 400, 40);
 		
 		menu.add(createServer);
 		menu.add(joinServer);
-		menu.add(instructions);
+		menu.add(tutorial);
 	
 		menu.setBackground(Color.WHITE);
 		f.add(menu);
@@ -55,10 +72,6 @@ public class Main implements ActionListener{
 		waitRoom.add(back);
 		waitRoom.add(l);
 		waitRoom.setBackground(Color.WHITE);
-		
-		instructionsTab.setLayout(null);
-		
-		instructionsTab.setBackground(Color.WHITE);
 
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
@@ -67,6 +80,17 @@ public class Main implements ActionListener{
 
 		createServer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (s != null) {
+					s.close();
+				}
+				s = new Server();
+				new Thread(s).start();
+				if (c != null && c.getHost() != InetAddress.getLoopbackAddress().getHostName()) {
+					c.disconnect();
+				}
+				c = new Client(InetAddress.getLoopbackAddress().getHostAddress());
+				c.setListener(Main.this);
+				c.connect();
 				f.setContentPane(waitRoom);
 				f.invalidate();
 				f.validate();
@@ -83,11 +107,8 @@ public class Main implements ActionListener{
 			}
 		});
 
-		instructions.addActionListener(new ActionListener() {
+		tutorial.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				f.setContentPane(instructionsTab);
-				f.invalidate();
-				f.validate();
 			}
 		});
 
@@ -106,6 +127,13 @@ public class Main implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	public void messageReceived(DataObject data) {
+		if (data.messageType.equals(DataObject.HANDSHAKE)) {
+			System.out.println("poggers");
+		}
 	}
 
 	public static void main(String[] args) throws IOException {

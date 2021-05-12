@@ -3,6 +3,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Server implements Runnable {
@@ -14,6 +15,7 @@ public class Server implements Runnable {
 	private Deck draw;
 	private Deck played;
 	private AtomicInteger turn;
+	private AtomicBoolean started;
 	
 	public Server() {
 		port = 9005;
@@ -37,14 +39,16 @@ public class Server implements Runnable {
 		draw.shuffle();
 		played.addCard(draw.removeTop());
 		turn = new AtomicInteger();
+		started = new AtomicBoolean();
 	}
 
 	@Override
 	public void run() {
-		while (handlers.size() < maxClients) {
+		while (handlers.size() < maxClients && !started.get()) {
 			try {
 				Socket client = server.accept();
 				ClientHandler handler = new ClientHandler(client, "" + handlers.size(), this);
+				handler.start();
 				handlers.add(handler);
 				new Thread(handler).start();
 			} catch (IOException e) {
@@ -75,6 +79,10 @@ public class Server implements Runnable {
 	
 	public AtomicInteger getTurn() {
 		return turn;
+	}
+	
+	public AtomicBoolean getStarted() {
+		return started;
 	}
 	
 	public int getMinClients() {

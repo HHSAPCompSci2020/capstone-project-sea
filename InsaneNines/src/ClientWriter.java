@@ -23,6 +23,7 @@ public class ClientWriter implements Runnable {
 	public void start() {
 		try {
 			out = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			out.flush();
 			looping = true;
 			new Thread(this).start();
 		} catch (IOException e) {

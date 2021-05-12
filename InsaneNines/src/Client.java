@@ -25,6 +25,7 @@ public class Client {
 			reader.setListener(listener);
 			reader.start();
 			writer.start();
+			sendMessage(DataObject.HANDSHAKE, new Object[] {});
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			return false;
@@ -50,5 +51,9 @@ public class Client {
 	
 	public synchronized void setListener(NetworkListener listener) {
 		this.listener = listener;
+	}
+	
+	public String getHost() {
+		return host;
 	}
 }

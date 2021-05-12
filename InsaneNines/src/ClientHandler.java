@@ -23,12 +23,10 @@ public class ClientHandler implements Runnable {
 	
 	public void start() {
 		try {
-			in = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 			out = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			out.flush();
+			in = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 			looping = true;
-			DataObject data = new DataObject();
-			data.messageType = DataObject.HANDSHAKE;
-			data.message = new Object[] {name};
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -36,7 +34,6 @@ public class ClientHandler implements Runnable {
 	
 	@Override
 	public void run() {
-		start();
 		looping = true;
 		while (looping) {
 			try {
@@ -77,8 +74,17 @@ public class ClientHandler implements Runnable {
 							next.message = new Object[] {card};
 							out.writeObject(next);
 							out.flush();
+						} else if(data.messageType.equals(DataObject.HANDSHAKE)) {
+							for (ClientHandler ch : server.getHandlers()) {
+								DataObject next = new DataObject();
+								next.messageType = DataObject.HANDSHAKE;
+								next.message = new Object[] {name};
+								ch.out.writeObject(next);
+								ch.out.flush();
+							}
 						} else if (data.messageType.equals(DataObject.START)) {
 							if (server.getHandlers().size() >= server.getMinClients()) {
+								server.getStarted().set(true);
 								int cards = 7;
 								if (server.getHandlers().size() == server.getMinClients()) {
 									cards = 5;
@@ -103,6 +109,8 @@ public class ClientHandler implements Runnable {
 								}
 							}
 						} else if (data.messageType.equals(DataObject.DISCONNECT)) {
+							server.getHandlers().remove(this);
+							looping = false;
 							for (ClientHandler ch : server.getHandlers()) {
 								DataObject next = new DataObject();
 								next.messageType = DataObject.DISCONNECT;

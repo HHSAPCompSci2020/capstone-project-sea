@@ -1,3 +1,4 @@
+package Network;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -6,6 +7,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import Game.Card;
+import Game.Deck;
 
 public class ClientHandler implements Runnable {
 	private Socket socket;

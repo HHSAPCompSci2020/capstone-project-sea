@@ -2,6 +2,12 @@ import java.awt.Color;
 import javax.swing.JFrame;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
 
+import Game.Player;
+import Network.Client;
+import Network.DataObject;
+import Network.NetworkListener;
+import Network.Server;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;

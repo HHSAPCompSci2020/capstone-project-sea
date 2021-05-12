@@ -1,3 +1,4 @@
+package Game;
 import javax.swing.JFrame;
 
 public class Player extends JFrame{

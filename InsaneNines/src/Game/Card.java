@@ -1,3 +1,4 @@
+package Game;
 
 public class Card {
 	private String rank;

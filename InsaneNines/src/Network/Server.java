@@ -1,3 +1,4 @@
+package Network;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -5,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import Game.Card;
+import Game.Deck;
 
 public class Server implements Runnable {
 	private int port;

@@ -1,3 +1,4 @@
+package Network;
 import java.io.Serializable;
 
 public class DataObject implements Serializable {

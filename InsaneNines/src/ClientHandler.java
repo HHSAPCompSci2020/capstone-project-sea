@@ -26,9 +26,6 @@ public class ClientHandler implements Runnable {
 			in = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 			out = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 			looping = true;
-			DataObject data = new DataObject();
-			data.messageType = DataObject.HANDSHAKE;
-			data.message = new Object[] {name};
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -77,31 +74,40 @@ public class ClientHandler implements Runnable {
 							next.message = new Object[] {card};
 							out.writeObject(next);
 							out.flush();
-						} else if (data.messageType.equals(DataObject.START)) {
-							if (server.getHandlers().size() >= server.getMinClients()) {
-								int cards = 7;
-								if (server.getHandlers().size() == server.getMinClients()) {
-									cards = 5;
-								}
-								for (ClientHandler ch : server.getHandlers()) {
-									Deck deck = new Deck();
-									for (int i = 0; i < cards; i++) {
-										deck.addCard(server.getDraw().removeTop());
-									}
-									DataObject next = new DataObject();
-									next.messageType = DataObject.START;
-									next.message = new Object[] {deck};
-									ch.out.writeObject(next);
-									ch.out.flush();
-								}
-								for (ClientHandler ch : server.getHandlers()) {
-									DataObject next = new DataObject();
-									next.messageType = DataObject.TURN;
-									next.message = new Object[] {server.getTurn().get(), server.getPlayed().getTop()};
-									ch.out.writeObject(next);
-									ch.out.flush();
-								}
+						} else if(data.messageType.equals(DataObject.HANDSHAKE)) {
+							for (ClientHandler ch : server.getHandlers()) {
+								DataObject next = new DataObject();
+								next.messageType = DataObject.HANDSHAKE;
+								next.message = new Object[] {name};
+								ch.out.writeObject(next);
+								ch.out.flush();
 							}
+						} else if (data.messageType.equals(DataObject.START)) {
+						if (server.getHandlers().size() >= server.getMinClients()) {
+							server.getStarted().set(true);
+							int cards = 7;
+							if (server.getHandlers().size() == server.getMinClients()) {
+								cards = 5;
+							}
+							for (ClientHandler ch : server.getHandlers()) {
+								Deck deck = new Deck();
+								for (int i = 0; i < cards; i++) {
+									deck.addCard(server.getDraw().removeTop());
+								}
+								DataObject next = new DataObject();
+								next.messageType = DataObject.START;
+								next.message = new Object[] {deck};
+								ch.out.writeObject(next);
+								ch.out.flush();
+							}
+							for (ClientHandler ch : server.getHandlers()) {
+								DataObject next = new DataObject();
+								next.messageType = DataObject.TURN;
+								next.message = new Object[] {server.getTurn().get(), server.getPlayed().getTop()};
+								ch.out.writeObject(next);
+								ch.out.flush();
+							}
+						}
 						} else if (data.messageType.equals(DataObject.DISCONNECT)) {
 							for (ClientHandler ch : server.getHandlers()) {
 								DataObject next = new DataObject();

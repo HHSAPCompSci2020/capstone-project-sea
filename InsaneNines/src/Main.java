@@ -1,16 +1,21 @@
 import java.awt.Color;
 import javax.swing.JFrame;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.concurrent.ExecutionException;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-public class Main implements ActionListener{
+public class Main implements ActionListener, NetworkListener {
 
 	public static final int GAME_SIZE = 750;
 //	public static String password;
@@ -18,6 +23,9 @@ public class Main implements ActionListener{
 	private JPanel menu, waitRoom, game;
 	private JButton createServer, joinServer, tutorial, back;
 	private JLabel l;
+	private Server s;
+	private Client c;
+	private Player p;
 
 	public Main() throws IOException {
 		//Server server = new Server();
@@ -66,6 +74,17 @@ public class Main implements ActionListener{
 
 		createServer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (s != null) {
+					s.close();
+				}
+				s = new Server();
+				new Thread(s).start();
+				if (c != null && c.getHost() != InetAddress.getLoopbackAddress().getHostName()) {
+					c.disconnect();
+				}
+				c = new Client(InetAddress.getLoopbackAddress().getHostAddress());
+				c.setListener(Main.this);
+				c.connect();
 				f.setContentPane(waitRoom);
 				f.invalidate();
 				f.validate();
@@ -102,6 +121,13 @@ public class Main implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	public void messageReceived(DataObject data) {
+		if (data.messageType.equals(DataObject.HANDSHAKE)) {
+			System.out.println("poggers");
+		}
 	}
 
 	public static void main(String[] args) throws IOException {

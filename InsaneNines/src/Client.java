@@ -8,6 +8,7 @@ public class Client {
 	private int port;
 	private ClientReader reader;
 	private ClientWriter writer;
+	private NetworkListener listener;
 
 	public Client(String host) {
 		// private 192.168.0.22
@@ -21,6 +22,7 @@ public class Client {
 			socket = new Socket(host, port);
 			reader = new ClientReader(socket);
 			writer = new ClientWriter(socket);
+			reader.setListener(listener);
 			reader.start();
 			writer.start();
 			sendMessage(DataObject.HANDSHAKE, new Object[] {});
@@ -48,6 +50,10 @@ public class Client {
 	}
 	
 	public synchronized void setListener(NetworkListener listener) {
-		reader.setListener(listener);
+		this.listener = listener;
+	}
+	
+	public String getHost() {
+		return host;
 	}
 }

@@ -48,6 +48,7 @@ public class Server implements Runnable {
 			try {
 				Socket client = server.accept();
 				ClientHandler handler = new ClientHandler(client, "" + handlers.size(), this);
+				handler.start();
 				handlers.add(handler);
 				new Thread(handler).start();
 			} catch (IOException e) {

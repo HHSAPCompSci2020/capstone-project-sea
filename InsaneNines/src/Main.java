@@ -17,7 +17,7 @@ public class Main implements ActionListener{
 	private JFrame f;
 	private JPanel menu, waitRoom, game, instructionsTab;
 	private JButton createServer, joinServer, instructions, back;
-	private JLabel players;
+	private JLabel l, l2;
 
 	public Main() throws IOException {
 		//Server server = new Server();
@@ -32,7 +32,7 @@ public class Main implements ActionListener{
 		waitRoom = new JPanel();
 		game = new JPanel();
 		instructionsTab = new JPanel();
-		players = new JLabel("Waiting for players... ");
+		l = new JLabel("Waiting for players... ");
 		
 
 		menu.setLayout(null);
@@ -50,14 +50,14 @@ public class Main implements ActionListener{
 		
 		waitRoom.setLayout(null);
 		back.setBounds(350, 300, 100, 40);
-		players.setBounds(40, 40, 400, 40);
-		//update player count when players join
+		l.setBounds(40, 40, 400, 40);
+		//update player label when players join
 		waitRoom.add(back);
-		waitRoom.add(players);
+		waitRoom.add(l);
 		waitRoom.setBackground(Color.WHITE);
 		
 		instructionsTab.setLayout(null);
-		//add instructions text
+		
 		instructionsTab.setBackground(Color.WHITE);
 
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -112,5 +112,8 @@ public class Main implements ActionListener{
 		new Main();
 
 	}
+
+
+
 }
 

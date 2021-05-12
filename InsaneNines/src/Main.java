@@ -1,5 +1,5 @@
 import java.awt.Color;
-import javax.swing.JFrame;
+
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
 
 import Game.Player;
@@ -8,17 +8,11 @@ import Network.DataObject;
 import Network.NetworkListener;
 import Network.Server;
 
-import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.concurrent.ExecutionException;
+import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class Main implements ActionListener, NetworkListener {
@@ -32,10 +26,13 @@ public class Main implements ActionListener, NetworkListener {
 	private Server s;
 	private Client c;
 	private Player p;
+	private ArrayList<Integer> ports;
 
 	public Main() throws IOException {
 		//Server server = new Server();
 		//server.run();
+		
+		ports = new ArrayList<Integer>();
 		
 		f = new JFrame("Welcome Screen");
 		createServer = new JButton("Create Server");
@@ -83,7 +80,8 @@ public class Main implements ActionListener, NetworkListener {
 				if (s != null) {
 					s.close();
 				}
-				s = new Server();
+				String port = JOptionPane.showInputDialog("Enter new port");
+				s = new Server(Integer.valueOf(port));
 				new Thread(s).start();
 				if (c != null && c.getHost() != InetAddress.getLoopbackAddress().getHostName()) {
 					c.disconnect();
@@ -100,10 +98,26 @@ public class Main implements ActionListener, NetworkListener {
 		joinServer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String ipAddress = JOptionPane.showInputDialog("Enter ip address");
-				//join room that matches ip address
-				f.setContentPane(waitRoom);
-				f.invalidate();
-				f.validate();
+				
+				int port = Integer.parseInt(ipAddress);
+				c = new Client(InetAddress.getLoopbackAddress().getHostAddress(), port);
+				
+				if(!ports.contains(ipAddress)) {
+					System.out.println("Create a new Server");
+				}
+				else {
+					c.setListener(Main.this);
+					c.connect();
+				
+					JLabel playerCount = new JLabel(String.valueOf(s.count));
+					playerCount.setBounds(150, 100, 100, 50);
+					waitRoom.add(playerCount);
+				
+					//join room that matches ip address
+					f.setContentPane(waitRoom);
+					f.invalidate();
+					f.validate();
+				}
 			}
 		});
 

@@ -20,9 +20,11 @@ public class Server implements Runnable {
 	private Deck played;
 	private AtomicInteger turn;
 	private AtomicBoolean started;
+	public int count;
 	
-	public Server() {
-		port = 9005;
+	public Server(int port) {
+		this.port = port;
+		count = 0;
 		minClients = 2;
 		maxClients = 4;
 		try {
@@ -54,6 +56,7 @@ public class Server implements Runnable {
 				ClientHandler handler = new ClientHandler(client, "" + handlers.size(), this);
 				handler.start();
 				handlers.add(handler);
+				count++;
 				new Thread(handler).start();
 			} catch (IOException e) {
 				e.printStackTrace();

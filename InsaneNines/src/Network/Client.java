@@ -18,6 +18,11 @@ public class Client {
 		port = 9005;
 	}
 	
+	public Client(String host, int port) {
+		this.host = host;
+		this.port = port;
+	}
+	
 	public synchronized boolean connect() {
 		try {
 			socket = new Socket(host, port);

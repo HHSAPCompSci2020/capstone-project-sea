@@ -8,13 +8,15 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class GamePanel extends JFrame {
+	
 	private ArrayList<Player> players;
 	private Deck discardPile;
 	
 	public GamePanel(int numOfPlayers) {
-		super("GAME");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBackground(new Color(0, 0, 0));
+		JFrame game = new JFrame();
+		game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		game.setBackground(new Color(0, 0, 0));
+	
 	}
 	
 }

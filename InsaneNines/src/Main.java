@@ -23,9 +23,8 @@ public class Main implements ActionListener, NetworkListener {
 
 	public static final int GAME_SIZE = 750;
 //	public static String password;
-	private JFrame f;
+	private JFrame f, game;
 	private JPanel menu, instructions, waitRoom;
-	GamePanel game;
 	private JButton createServer, joinServer, viewInstructions, back, start;
 	private JLabel l, playerCount;
 	private JTextArea serverInfo;
@@ -195,7 +194,7 @@ public class Main implements ActionListener, NetworkListener {
 				int players = playerCount.getText().charAt(0) - '0';
 				if (players >= 2) {
 					c.sendMessage(DataObject.START, new Object[] {});
-					game = new GamePanel(players, s);
+					game = new GamePanel(players);
 					f.setContentPane(game);
 					f.invalidate();
 					f.validate();

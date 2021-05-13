@@ -70,6 +70,7 @@ public class Main implements ActionListener, NetworkListener {
 		waitRoom.setLayout(null);
 		back.setBounds(350, 300, 100, 40);
 		l.setBounds(40, 60, 400, 40);
+		serverInfo.setEditable(false);
 		serverInfo.setBounds(40, 20, 400, 40);
 		//update player label when players join
 		playerCount.setBounds(150, 100, 100, 50);
@@ -83,6 +84,7 @@ public class Main implements ActionListener, NetworkListener {
 		instructions.add(back);
 		instructions.setBackground(Color.WHITE);
 
+		f.setResizable(false);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
 		f.setSize(500,400);

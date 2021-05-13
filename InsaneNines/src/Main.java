@@ -111,8 +111,7 @@ public class Main implements ActionListener, NetworkListener {
 							
 							protected void done() {
 								try {
-									String address = get();
-									serverInfo.setText("IP Address: " + address + "\nPort Number: " + s.getPort());
+									c.sendMessage(DataObject.INFORMATION, get());
 								} catch (InterruptedException e) {
 								} catch (ExecutionException e) {
 									e.printStackTrace();
@@ -201,7 +200,12 @@ public class Main implements ActionListener, NetworkListener {
 	public void messageReceived(DataObject data) {
 		if (data.messageType.equals(DataObject.HANDSHAKE)) {
 			playerCount.setText((int) data.message[1] + "/4");
+			if (data.message[2] != null) {
+				serverInfo.setText("IP Address: " + data.message[2] + "\nPort Number: " + data.message[3]);
+			}
 			System.out.println("poggers");
+		} else if (data.messageType.equals(DataObject.INFORMATION)) {
+			serverInfo.setText("IP Address: " + data.message[0] + "\nPort Number: " + data.message[1]);
 		}
 	}
 

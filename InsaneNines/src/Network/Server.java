@@ -22,13 +22,13 @@ public class Server implements Runnable {
 	private AtomicBoolean started;
 	public int count;
 	
-	public Server(int port) {
-		this.port = port;
+	public Server() {
 		count = 0;
 		minClients = 2;
 		maxClients = 4;
 		try {
-			server = new ServerSocket(port);
+			server = new ServerSocket(0);
+			port = server.getLocalPort();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -94,6 +94,10 @@ public class Server implements Runnable {
 	
 	public int getMinClients() {
 		return minClients;
+	}
+	
+	public int getPort() {
+		return port;
 	}
 	
 	protected void finalize() {

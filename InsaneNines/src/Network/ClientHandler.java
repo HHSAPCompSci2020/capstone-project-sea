@@ -82,7 +82,7 @@ public class ClientHandler implements Runnable {
 							for (ClientHandler ch : server.getHandlers()) {
 								DataObject next = new DataObject();
 								next.messageType = DataObject.HANDSHAKE;
-								next.message = new Object[] {name};
+								next.message = new Object[] {name, server.getHandlers().size()};
 								ch.out.writeObject(next);
 								ch.out.flush();
 							}

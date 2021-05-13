@@ -1,5 +1,6 @@
 package Network;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -11,19 +12,12 @@ public class Client {
 	private ClientWriter writer;
 	private NetworkListener listener;
 
-	public Client(String host) {
-		// private 192.168.0.22
-		// public 98.210.100.211
-		this.host = host;
-		port = 9005;
-	}
-	
 	public Client(String host, int port) {
 		this.host = host;
 		this.port = port;
 	}
 	
-	public synchronized boolean connect() {
+	public synchronized boolean connect() throws ConnectException {
 		try {
 			socket = new Socket(host, port);
 			reader = new ClientReader(socket);
@@ -35,6 +29,8 @@ public class Client {
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			return false;
+		} catch (ConnectException e) {
+			throw e;
 		} catch (IOException e) {
 			e.printStackTrace();
 			disconnect();
@@ -44,8 +40,12 @@ public class Client {
 	}
 	
 	public synchronized void disconnect() {
-		reader.stop();
-		writer.stop();
+		if (reader != null) {
+			reader.stop();
+		}
+		if (writer != null) {
+			writer.stop();
+		}
 	}
 	
 	public synchronized void sendMessage(String messageType, Object... message) {

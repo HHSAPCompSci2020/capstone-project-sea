@@ -26,7 +26,11 @@ public class Deck{
 	}
 	
 	public Card removeTop() {
-		return cards.remove(cards.size()-1);
+		if(cards.size() > 1) {
+			return cards.remove(cards.size()-1);
+		}
+		return null;
+		
 	}
 	
 	public void shuffle() {

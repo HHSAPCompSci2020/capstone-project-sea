@@ -12,7 +12,9 @@ public class GamePanel extends JPanel {
 	private Deck discardPile;
 	
 	public GamePanel(int numOfPlayers) {
-		
+		super("GAME");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBackground(new Color(0, 0, 0));
 	}
 	
 }

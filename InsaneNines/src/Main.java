@@ -195,9 +195,7 @@ public class Main implements ActionListener, NetworkListener {
 				if (players >= 2) {
 					c.sendMessage(DataObject.START, new Object[] {});
 					game = new GamePanel(players);
-					f.setContentPane(game);
-					f.invalidate();
-					f.validate();
+					f.setVisible(false);
 				} else {
 					JOptionPane.showMessageDialog(null, "Must have at least 2 players to start.");
 				}

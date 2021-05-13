@@ -11,7 +11,7 @@ public class Deck{
 		String[] suits = {"CLUBS", "DIAMONDS", "HEARTS", "SPADES"};
 		for (String rank : ranks) {
 			for (String suit : suits) {
-				cards.add(new Card(rank, suit));
+				//cards.add(new Card(rank, suit));
 			}
 		}
 	}

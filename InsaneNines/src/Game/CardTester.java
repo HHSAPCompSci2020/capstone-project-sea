@@ -1,10 +1,11 @@
 package Game;
 
-public class CardTester {
+import java.net.URL;
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 
-	}
+public class CardTester extends JFrame{
+
 
 }

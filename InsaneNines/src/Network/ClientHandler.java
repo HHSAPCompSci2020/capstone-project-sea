@@ -48,7 +48,8 @@ public class ClientHandler implements Runnable {
 						if (data.messageType.equals(DataObject.PLAY)) {
 							Card card = (Card) data.message[0];
 							Deck played = server.getPlayed();
-							if (Card.isValid(card, played.getTop())) {
+							//if (Card.isValid(card, played.getTop())) {
+							if(10==10) {
 								played.addCard(card);
 								AtomicInteger turn = server.getTurn();
 								turn.set((turn.get()+1)%server.getHandlers().size());

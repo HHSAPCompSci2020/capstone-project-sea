@@ -36,6 +36,13 @@ public class Server implements Runnable {
 		handlers = new ArrayList<ClientHandler>();
 		draw = new Deck();
 		played = new Deck();
+		String[] ranks = {"ACE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "JACK", "QUEEN", "KING"};
+		String[] suits = {"CLUBS", "DIAMONDS", "HEARTS", "SPADES"};
+		for (String rank : ranks) {
+			for (String suit : suits) {
+				//draw.addCard(new Card(rank, suit));
+			}
+		}
 		draw.shuffle();
 		played.addCard(draw.removeTop());
 		turn = new AtomicInteger();

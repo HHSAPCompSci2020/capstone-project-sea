@@ -20,11 +20,6 @@ public class Card {
 		this.image = image;
 	}
 	
-	public Card(String rank, String suit) {
-		this.rank = rank;
-		this.suit = suit;
-	}
-	
 	public void draw(Graphics g, Component c) {
 		image.paintIcon(c, g, x, y);
 	}

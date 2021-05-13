@@ -1,40 +1,34 @@
 package Game;
-import java.awt.Container;
-
 import javax.swing.JFrame;
-import javax.swing.JTextArea;
 
 public class Player extends JFrame{
-	
+	private String name;
+	private int numCards;
 	private Deck hand;
-	private int width;
-	private int height;
-	private Container contentPane;
-	private JTextArea turn;
 	
-	public Player(int w, int h) {
-		width = w;
-		height = h;
-		contentPane = this.getContentPane();
-		turn = new JTextArea();
+	//draws your hand 
+	public void setUpGuiDeck() {
+		
 	}
 	
-	public void setUpGui() {
-		this.setSize(width, height);
-		this.setTitle("GAME");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		contentPane.add(turn);
-		turn.setText("YOUR TURN");
-		turn.setWrapStyleWord(true);
-		turn.setLineWrap(true);
-		turn.setEditable(false);
-		this.setVisible(true);
+	public Player(String name, Deck deck) {
+		this.name = name;
+		numCards = deck.getDeck().size();
+		hand = deck;
 	}
 	
-	
-	public static void main(String[] args) {
-		Player p = new Player(500, 400);
-		p.setUpGui();
+	public Player(String name, int numCards) {
+		this.name = name;
+		this.numCards = numCards;
+		hand = null;
+	}
+
+	public int getNumCards() {
+		return numCards;
+	}
+
+	public void setNumCards(int numCards) {
+		this.numCards = numCards;
 	}
 	
 }

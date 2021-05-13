@@ -2,6 +2,7 @@ import java.awt.Color;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
 
+import Game.Deck;
 import Game.GamePanel;
 import Game.Player;
 import Network.Client;
@@ -23,13 +24,16 @@ public class Main implements ActionListener, NetworkListener {
 
 	public static final int GAME_SIZE = 750;
 //	public static String password;
-	private JFrame f, game;
+	private JFrame f;
+	private GamePanel game;
 	private JPanel menu, instructions, waitRoom;
 	private JButton createServer, joinServer, viewInstructions, back, start;
 	private JLabel l, playerCount;
 	private JTextArea serverInfo, i;
 	private Server s;
 	private Client c;
+	private String name;
+	private ArrayList<String> names;
 	private SwingWorker<String, Void> worker;
 
 	public Main() throws IOException {
@@ -48,6 +52,8 @@ public class Main implements ActionListener, NetworkListener {
 		l = new JLabel("Waiting for players... ");
 		playerCount = new JLabel("1/4");
 		serverInfo = new JTextArea("IP Address: Loading...\nPort Number: Loading...");
+		names = new ArrayList<String>();
+		
 		i = new JTextArea("Insane nines is a turn based game where 2 - 4 players play and draw"
 				+ "\ncards until they run out of cards. Clicking on cards selects and then"
 				+ "\nclicking on the played pile in the middle plays the card. Clicking on the"
@@ -200,7 +206,7 @@ public class Main implements ActionListener, NetworkListener {
 			public void actionPerformed(ActionEvent e) {
 				int players = playerCount.getText().charAt(0) - '0';
 				if (players >= 2) {
-					c.sendMessage(DataObject.START, new Object[] {});
+					c.sendMessage(DataObject.START, new Object[] {names});
 					f.setVisible(false);
 				} else {
 					JOptionPane.showMessageDialog(null, "Must have at least 2 players to start.");
@@ -220,6 +226,10 @@ public class Main implements ActionListener, NetworkListener {
 	@Override
 	public void messageReceived(DataObject data) {
 		if (data.messageType.equals(DataObject.HANDSHAKE)) {
+			if (name == null) {
+				name = (String) data.message[0];
+			}
+			names.add((String) data.message[0]);
 			playerCount.setText((int) data.message[1] + "/4");
 			if (data.message[2] != null) {
 				serverInfo.setText("IP Address: " + data.message[2] + "\nPort Number: " + data.message[3]);
@@ -227,11 +237,17 @@ public class Main implements ActionListener, NetworkListener {
 			System.out.println("poggers");
 		} else if (data.messageType.equals(DataObject.INFORMATION)) {
 			serverInfo.setText("IP Address: " + data.message[0] + "\nPort Number: " + data.message[1]);
+		} else if (data.messageType.equals(DataObject.START)) {
+			game = new GamePanel(name, (ArrayList<String>) data.message[0], (Deck) data.message[1]);
+			c.addListener((NetworkListener) game);
+			f.setContentPane(game);
+			f.invalidate();
+			f.validate();
 		}
 	}
 
 	public static void main(String[] args) throws IOException {
-		new GamePanel(2);
+		new Main();
 
 	}
 

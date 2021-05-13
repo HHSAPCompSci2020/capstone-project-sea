@@ -13,14 +13,21 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class GamePanel extends JComponent implements MouseListener,
-MouseMotionListener{
+public class GamePanel extends JFrame implements MouseListener, MouseMotionListener{
 	
 	private static final Color BACKGROUND_COLOR = Color.GREEN;
     private static final int   TABLE_SIZE       = 400;    // Pixels.
     ArrayList<Player> hands;
     
-   GamePanel(int players){
+   public GamePanel(int players){
+	   
+	   JFrame game = new JFrame();
+	   game.setResizable(false);
+	   game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	   game.setVisible(true);
+	   game.setSize(500,400);
+	   game.setBackground(BACKGROUND_COLOR);
+	   
 	   hands = new ArrayList<Player>();
 	   
 	   

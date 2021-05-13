@@ -201,10 +201,7 @@ public class Main implements ActionListener, NetworkListener {
 				int players = playerCount.getText().charAt(0) - '0';
 				if (players >= 2) {
 					c.sendMessage(DataObject.START, new Object[] {});
-					game = new GamePanel(players);
-					f.setContentPane(game);
-					f.invalidate();
-					f.validate();
+					f.setVisible(false);
 				} else {
 					JOptionPane.showMessageDialog(null, "Must have at least 2 players to start.");
 				}
@@ -234,7 +231,7 @@ public class Main implements ActionListener, NetworkListener {
 	}
 
 	public static void main(String[] args) throws IOException {
-		new Main();
+		new GamePanel(2);
 
 	}
 

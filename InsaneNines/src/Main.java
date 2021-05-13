@@ -78,7 +78,7 @@ public class Main implements ActionListener, NetworkListener {
 		waitRoom.add(l);
 		waitRoom.add(serverInfo);
 		waitRoom.setBackground(Color.WHITE);
-		
+			
 		instructions.setLayout(null);
 		instructions.add(back);
 		instructions.setBackground(Color.WHITE);

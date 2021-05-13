@@ -48,22 +48,6 @@ public class Main implements ActionListener, NetworkListener {
 		l = new JLabel("Waiting for players... ");
 		playerCount = new JLabel("?/4");
 		serverInfo = new JTextArea("IP Address: Loading...\nPort Number: Loading...");
-		worker = new SwingWorker<String, Void>() {
-			protected String doInBackground() throws Exception {
-				return InetAddress.getLocalHost().getHostAddress();
-			}
-			
-			protected void done() {
-				try {
-					String address = get();
-					serverInfo.setText("IP Address: " + address + "\nPort Number: " + s.getPort());
-				} catch (InterruptedException e) {
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				}
-			}
-			
-		};
 		
 //		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
 //		f.setContentPane(new JLabel(new ImageIcon(img)));
@@ -118,6 +102,22 @@ public class Main implements ActionListener, NetworkListener {
 				c.setListener(Main.this);
 				try {
 					if (c.connect()) {
+						worker = new SwingWorker<String, Void>() {
+							protected String doInBackground() throws Exception {
+								return InetAddress.getLocalHost().getHostAddress();
+							}
+							
+							protected void done() {
+								try {
+									String address = get();
+									serverInfo.setText("IP Address: " + address + "\nPort Number: " + s.getPort());
+								} catch (InterruptedException e) {
+								} catch (ExecutionException e) {
+									e.printStackTrace();
+								}
+							}
+							
+						};
 						worker.execute();
 						f.setContentPane(waitRoom);
 						f.invalidate();
@@ -143,7 +143,6 @@ public class Main implements ActionListener, NetworkListener {
 						c = new Client(ip.getText(), Integer.parseInt(port.getText()));
 						c.setListener(Main.this);
 						if (c.connect()) {
-							worker.execute();
 							f.setContentPane(waitRoom);
 							f.invalidate();
 							f.validate();

@@ -14,6 +14,7 @@ public class Card {
 	private int y;
 	
 	
+	
 	public Card(ImageIcon image, String rank, String suit){
 		this.rank = rank;
 		this.suit = suit;
@@ -52,5 +53,5 @@ public class Card {
 	public static boolean isValid(Card a, Card b) {
 		return a.rank.equals(b.rank) || a.suit.equals(b.suit) || a.isNine();
 	}
-	
 }
+

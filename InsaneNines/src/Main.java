@@ -23,8 +23,8 @@ public class Main implements ActionListener, NetworkListener {
 
 	public static final int GAME_SIZE = 750;
 //	public static String password;
-	private JFrame f;
-	private JPanel menu, instructions, waitRoom, game;
+	private JFrame f, game;
+	private JPanel menu, instructions, waitRoom;
 	private JButton createServer, joinServer, viewInstructions, back, start;
 	private JLabel l, playerCount;
 	private JTextArea serverInfo;

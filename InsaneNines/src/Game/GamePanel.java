@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class GamePanel extends JPanel {
+public class GamePanel extends JFrame {
 	private ArrayList<Player> players;
 	private Deck discardPile;
 	

@@ -6,13 +6,15 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
-public class GamePanel {
+public class GamePanel extends JFrame{
 	
 	private ArrayList<Player> players;
 	private Deck discardPile;
 	
 	public GamePanel(int numOfPlayers) {
-		
+		super("GAME");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBackground(new Color(0, 0, 0));
 	}
 	
 }

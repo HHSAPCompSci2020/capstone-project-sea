@@ -31,8 +31,6 @@ public class Main implements ActionListener, NetworkListener {
 	private Client c;
 	private Player p;
 	private SwingWorker<String, Void> worker;
-	private ArrayList<String> names;
-	private ArrayList<Integer> numCards;
 
 	public Main() throws IOException {
 		//Server server = new Server();

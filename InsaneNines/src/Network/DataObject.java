@@ -6,6 +6,8 @@ public class DataObject implements Serializable {
 	
 	public static final String HANDSHAKE = "HANDSHAKE";
 	
+	public static final String INFORMATION = "INFORMATION";
+	
 	public static final String START = "START";
 	
 	public static final String TURN = "TURN";
@@ -13,6 +15,8 @@ public class DataObject implements Serializable {
 	public static final String PLAY = "PLAY";
 	
 	public static final String DRAW = "DRAW";
+	
+	public static final String END = "END";
 	
 	public static final String DISCONNECT = "DISCONNECT";
 	

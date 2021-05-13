@@ -11,6 +11,7 @@ import Game.Card;
 import Game.Deck;
 
 public class Server implements Runnable {
+	private String host;
 	private int port;
 	private int minClients;
 	private int maxClients;
@@ -98,6 +99,14 @@ public class Server implements Runnable {
 	
 	public int getPort() {
 		return port;
+	}
+	
+	public void setHost(String host) {
+		this.host = host;
+	}
+	
+	public String getHost() {
+		return host;
 	}
 	
 	protected void finalize() {

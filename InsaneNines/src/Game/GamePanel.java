@@ -6,11 +6,11 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
-public class DrawingSurface {
+public class GamePanel {
 	private ArrayList<Player> players;
 	private Deck discardPile;
 	
-	public DrawingSurface(int numOfPlayers) {
+	public GamePanel(int numOfPlayers) {
 		
 	}
 	

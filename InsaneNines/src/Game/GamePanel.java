@@ -16,7 +16,6 @@ import javax.swing.JPanel;
 public class GamePanel extends JFrame implements MouseListener, MouseMotionListener{
 	
 	private static final Color BACKGROUND_COLOR = Color.GREEN;
-    private static final int   TABLE_SIZE       = 400;    // Pixels.
     ArrayList<Player> hands;
     
    public GamePanel(int players){
@@ -26,9 +25,12 @@ public class GamePanel extends JFrame implements MouseListener, MouseMotionListe
 	   game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	   game.setVisible(true);
 	   game.setSize(500,400);
-	   game.setBackground(BACKGROUND_COLOR);
 	   
 	   hands = new ArrayList<Player>();
+	   
+	   for(int i = 0; i < )
+	   
+	   
 	   
 	   
    }

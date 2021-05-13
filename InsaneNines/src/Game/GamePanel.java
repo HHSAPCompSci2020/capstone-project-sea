@@ -28,7 +28,7 @@ public class GamePanel extends JFrame implements MouseListener, MouseMotionListe
 	   
 	   hands = new ArrayList<Player>();
 	   
-	   for(int i = 0; i < )
+//	   for(int i = 0; i < )
 	   
 	   
 	   

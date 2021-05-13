@@ -2,6 +2,7 @@ import java.awt.Color;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
 
+import Game.Deck;
 import Game.GamePanel;
 import Game.Player;
 import Network.Client;
@@ -30,6 +31,8 @@ public class Main implements ActionListener, NetworkListener {
 	private JTextArea serverInfo;
 	private Server s;
 	private Client c;
+	private String name;
+	private ArrayList<String> names;
 	private SwingWorker<String, Void> worker;
 
 	public Main() throws IOException {
@@ -48,6 +51,7 @@ public class Main implements ActionListener, NetworkListener {
 		l = new JLabel("Waiting for players... ");
 		playerCount = new JLabel("1/4");
 		serverInfo = new JTextArea("IP Address: Loading...\nPort Number: Loading...");
+		names = new ArrayList<String>();
 		
 //		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
 //		f.setContentPane(new JLabel(new ImageIcon(img)));
@@ -192,12 +196,8 @@ public class Main implements ActionListener, NetworkListener {
 		start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int players = playerCount.getText().charAt(0) - '0';
-				if (players >= 2) {
-					c.sendMessage(DataObject.START, new Object[] {});
-					game = new GamePanel(players);
-					f.setContentPane(game);
-					f.invalidate();
-					f.validate();
+				if (playerCount.getText().charAt(0) - '0' >= 2) {
+					c.sendMessage(DataObject.START, new Object[] {names});
 				} else {
 					JOptionPane.showMessageDialog(null, "Must have at least 2 players to start.");
 				}
@@ -216,6 +216,10 @@ public class Main implements ActionListener, NetworkListener {
 	@Override
 	public void messageReceived(DataObject data) {
 		if (data.messageType.equals(DataObject.HANDSHAKE)) {
+			if (name == null) {
+				name = (String) data.message[0];
+			}
+			names.add((String) data.message[0]);
 			playerCount.setText((int) data.message[1] + "/4");
 			if (data.message[2] != null) {
 				serverInfo.setText("IP Address: " + data.message[2] + "\nPort Number: " + data.message[3]);
@@ -223,6 +227,12 @@ public class Main implements ActionListener, NetworkListener {
 			System.out.println("poggers");
 		} else if (data.messageType.equals(DataObject.INFORMATION)) {
 			serverInfo.setText("IP Address: " + data.message[0] + "\nPort Number: " + data.message[1]);
+		} else if (data.messageType.equals(DataObject.START)) {
+			game = new GamePanel(name, (ArrayList<String>) data.message[0], (Deck) data.message[1]);
+			c.addListener((NetworkListener) game);
+			f.setContentPane(game);
+			f.invalidate();
+			f.validate();
 		}
 	}
 

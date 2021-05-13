@@ -89,9 +89,9 @@ public class ClientHandler implements Runnable {
 						} else if (data.messageType.equals(DataObject.START)) {
 							if (server.getHandlers().size() >= server.getMinClients()) {
 								server.getStarted().set(true);
-								int cards = 7;
+								int cards = 5;
 								if (server.getHandlers().size() == server.getMinClients()) {
-									cards = 5;
+									cards = 7;
 								}
 								for (ClientHandler ch : server.getHandlers()) {
 									Deck deck = new Deck();
@@ -100,7 +100,7 @@ public class ClientHandler implements Runnable {
 									}
 									DataObject next = new DataObject();
 									next.messageType = DataObject.START;
-									next.message = new Object[] {deck};
+									next.message = new Object[] {data.message[0], deck};
 									ch.out.writeObject(next);
 									ch.out.flush();
 								}

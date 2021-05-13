@@ -12,7 +12,9 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.*;
 
@@ -24,16 +26,15 @@ public class Main implements ActionListener, NetworkListener {
 	private JPanel menu, instructions, waitRoom, game;
 	private JButton createServer, joinServer, viewInstructions, back;
 	private JLabel l, playerCount;
+	private JTextArea serverInfo;
 	private Server s;
 	private Client c;
 	private Player p;
-	private ArrayList<Integer> ports;
+	private SwingWorker<String, Void> worker;
 
 	public Main() throws IOException {
 		//Server server = new Server();
 		//server.run();
-		
-		ports = new ArrayList<Integer>();
 		
 		f = new JFrame("Welcome Screen");
 		createServer = new JButton("Create Server");
@@ -45,7 +46,8 @@ public class Main implements ActionListener, NetworkListener {
 		waitRoom = new JPanel();
 		game = new JPanel();
 		l = new JLabel("Waiting for players... ");
-		playerCount = new JLabel();
+		playerCount = new JLabel("?/4");
+		serverInfo = new JTextArea("IP Address: Loading...\nPort Number: Loading...");
 		
 //		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
 //		f.setContentPane(new JLabel(new ImageIcon(img)));
@@ -67,12 +69,14 @@ public class Main implements ActionListener, NetworkListener {
 		
 		waitRoom.setLayout(null);
 		back.setBounds(350, 300, 100, 40);
-		l.setBounds(40, 40, 400, 40);
+		l.setBounds(40, 60, 400, 40);
+		serverInfo.setBounds(40, 20, 400, 40);
 		//update player label when players join
 		playerCount.setBounds(150, 100, 100, 50);
 		waitRoom.add(playerCount);
 		waitRoom.add(back);
 		waitRoom.add(l);
+		waitRoom.add(serverInfo);
 		waitRoom.setBackground(Color.WHITE);
 		
 		instructions.setLayout(null);
@@ -98,6 +102,23 @@ public class Main implements ActionListener, NetworkListener {
 				c.setListener(Main.this);
 				try {
 					if (c.connect()) {
+						worker = new SwingWorker<String, Void>() {
+							protected String doInBackground() throws Exception {
+								return InetAddress.getLocalHost().getHostAddress();
+							}
+							
+							protected void done() {
+								try {
+									String address = get();
+									serverInfo.setText("IP Address: " + address + "\nPort Number: " + s.getPort());
+								} catch (InterruptedException e) {
+								} catch (ExecutionException e) {
+									e.printStackTrace();
+								}
+							}
+							
+						};
+						worker.execute();
 						f.setContentPane(waitRoom);
 						f.invalidate();
 						f.validate();
@@ -155,6 +176,9 @@ public class Main implements ActionListener, NetworkListener {
 				if (c != null) {
 					c.disconnect();
 					c = null;
+				}
+				if (worker != null) {
+					worker.cancel(true);
 				}
 				f.setContentPane(menu);
 				f.invalidate();

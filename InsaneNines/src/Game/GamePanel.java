@@ -16,13 +16,18 @@ import javax.swing.JPanel;
 import Network.DataObject;
 import Network.NetworkListener;
 
-public class GamePanel extends JComponent implements MouseListener, MouseMotionListener, NetworkListener {
+public class GamePanel extends JFrame implements MouseListener, MouseMotionListener, NetworkListener {
 	private static final Color BACKGROUND_COLOR = Color.GREEN;
     private static final int   TABLE_SIZE       = 400;    // Pixels.
 	private int pos;
 	private ArrayList<Player> players;
-	
+
 	public GamePanel(String name, ArrayList<String> names, Deck deck) {
+		JFrame game = new JFrame();
+	   game.setResizable(false);
+	   game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	   game.setVisible(true);
+	   game.setSize(500,400);
 		players = new ArrayList<Player>();
 		for (int i = 0; i < names.size(); i++) {
 			if (names.get(i).equals(name)) {

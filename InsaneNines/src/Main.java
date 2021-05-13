@@ -205,8 +205,9 @@ public class Main implements ActionListener, NetworkListener {
 		start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int players = playerCount.getText().charAt(0) - '0';
-				if (playerCount.getText().charAt(0) - '0' >= 2) {
+				if (players >= 2) {
 					c.sendMessage(DataObject.START, new Object[] {names});
+					f.setVisible(false);
 				} else {
 					JOptionPane.showMessageDialog(null, "Must have at least 2 players to start.");
 				}

@@ -27,7 +27,7 @@ public class Main implements ActionListener, NetworkListener {
 	private JPanel menu, instructions, waitRoom;
 	private JButton createServer, joinServer, viewInstructions, back, start;
 	private JLabel l, playerCount;
-	private JTextArea serverInfo;
+	private JTextArea serverInfo, i;
 	private Server s;
 	private Client c;
 	private SwingWorker<String, Void> worker;
@@ -48,7 +48,12 @@ public class Main implements ActionListener, NetworkListener {
 		l = new JLabel("Waiting for players... ");
 		playerCount = new JLabel("1/4");
 		serverInfo = new JTextArea("IP Address: Loading...\nPort Number: Loading...");
-		
+		i = new JTextArea("Insane nines is a turn based game where 2 - 4 players play and draw"
+				+ "\ncards until they run out of cards. Clicking on cards selects and then"
+				+ "\nclicking on the played pile in the middle plays the card. Clicking on the"
+				+ "\nother card pile will draw a card. You can play cards that have matching"
+				+ "\nnumbers or suits with the last played card or you can play card 9 as a wild"
+				+ "\ncard and choose the next suit.");
 //		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
 //		f.setContentPane(new JLabel(new ImageIcon(img)));
 		
@@ -82,6 +87,8 @@ public class Main implements ActionListener, NetworkListener {
 		waitRoom.setBackground(Color.WHITE);
 			
 		instructions.setLayout(null);
+		i.setBounds(40, 100, 400, 200);
+		instructions.add(i);
 		instructions.add(back);
 		instructions.setBackground(Color.WHITE);
 

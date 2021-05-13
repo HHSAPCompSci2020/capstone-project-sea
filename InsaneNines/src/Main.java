@@ -174,6 +174,7 @@ public class Main implements ActionListener, NetworkListener {
 	@Override
 	public void messageReceived(DataObject data) {
 		if (data.messageType.equals(DataObject.HANDSHAKE)) {
+			playerCount.setText((int) data.message[1] + "/4");
 			System.out.println("poggers");
 		}
 	}

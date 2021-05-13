@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 public class Client {
 	private Socket socket;
@@ -10,11 +11,12 @@ public class Client {
 	private int port;
 	private ClientReader reader;
 	private ClientWriter writer;
-	private NetworkListener listener;
+	private ArrayList<NetworkListener> listeners;
 
 	public Client(String host, int port) {
 		this.host = host;
 		this.port = port;
+		listeners = new ArrayList<NetworkListener>();
 	}
 	
 	public synchronized boolean connect() throws ConnectException {
@@ -22,7 +24,7 @@ public class Client {
 			socket = new Socket(host, port);
 			reader = new ClientReader(socket);
 			writer = new ClientWriter(socket);
-			reader.setListener(listener);
+			reader.setListeners(listeners);
 			reader.start();
 			writer.start();
 			sendMessage(DataObject.HANDSHAKE, new Object[] {});
@@ -55,8 +57,10 @@ public class Client {
 		writer.sendMessage(data);
 	}
 	
-	public synchronized void setListener(NetworkListener listener) {
-		this.listener = listener;
+	public void addListener(NetworkListener listener) {
+		synchronized (listeners) {
+			listeners.add(listener);
+		}
 	}
 	
 	public String getHost() {

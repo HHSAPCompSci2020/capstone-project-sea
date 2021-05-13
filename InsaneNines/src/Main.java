@@ -2,6 +2,7 @@ import java.awt.Color;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
 
+import Game.GamePanel;
 import Game.Player;
 import Network.Client;
 import Network.DataObject;
@@ -24,12 +25,11 @@ public class Main implements ActionListener, NetworkListener {
 //	public static String password;
 	private JFrame f;
 	private JPanel menu, instructions, waitRoom, game;
-	private JButton createServer, joinServer, viewInstructions, back;
+	private JButton createServer, joinServer, viewInstructions, back, start;
 	private JLabel l, playerCount;
 	private JTextArea serverInfo;
 	private Server s;
 	private Client c;
-	private Player p;
 	private SwingWorker<String, Void> worker;
 
 	public Main() throws IOException {
@@ -41,12 +41,12 @@ public class Main implements ActionListener, NetworkListener {
 		joinServer = new JButton("Join Server");
 		viewInstructions = new JButton("Instructions");
 		back = new JButton("Back");
+		start = new JButton("Start");
 		menu = new JPanel();
 		instructions = new JPanel();
 		waitRoom = new JPanel();
-		game = new JPanel();
 		l = new JLabel("Waiting for players... ");
-		playerCount = new JLabel("?/4");
+		playerCount = new JLabel("1/4");
 		serverInfo = new JTextArea("IP Address: Loading...\nPort Number: Loading...");
 		
 //		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
@@ -69,6 +69,7 @@ public class Main implements ActionListener, NetworkListener {
 		
 		waitRoom.setLayout(null);
 		back.setBounds(350, 300, 100, 40);
+		start.setBounds(50, 300, 100, 40);
 		l.setBounds(40, 60, 400, 40);
 		serverInfo.setEditable(false);
 		serverInfo.setBounds(40, 20, 400, 40);
@@ -101,7 +102,7 @@ public class Main implements ActionListener, NetworkListener {
 					c.disconnect();
 				}
 				c = new Client(InetAddress.getLoopbackAddress().getHostAddress(), s.getPort());
-				c.setListener(Main.this);
+				c.addListener(Main.this);
 				try {
 					if (c.connect()) {
 						worker = new SwingWorker<String, Void>() {
@@ -120,6 +121,7 @@ public class Main implements ActionListener, NetworkListener {
 							
 						};
 						worker.execute();
+						waitRoom.add(start);
 						f.setContentPane(waitRoom);
 						f.invalidate();
 						f.validate();
@@ -142,7 +144,7 @@ public class Main implements ActionListener, NetworkListener {
 				if (choice == JOptionPane.OK_OPTION) {
 					try {
 						c = new Client(ip.getText(), Integer.parseInt(port.getText()));
-						c.setListener(Main.this);
+						c.addListener(Main.this);
 						if (c.connect()) {
 							f.setContentPane(waitRoom);
 							f.invalidate();
@@ -187,6 +189,21 @@ public class Main implements ActionListener, NetworkListener {
 			}
 		});
 
+		start.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int players = playerCount.getText().charAt(0) - '0';
+				if (players >= 2) {
+					c.sendMessage(DataObject.START, new Object[] {});
+					game = new GamePanel(players);
+					f.setContentPane(game);
+					f.invalidate();
+					f.validate();
+				} else {
+					JOptionPane.showMessageDialog(null, "Must have at least 2 players to start.");
+				}
+			}
+			
+		});
 
 	}
 

@@ -3,6 +3,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
@@ -10,14 +11,14 @@ public class ClientReader implements Runnable {
 	private Socket socket;
 	private ObjectInputStream in;
 	private boolean looping;
-	private NetworkListener listener;
+	private ArrayList<NetworkListener> listeners;
 	
 	public ClientReader(Socket socket) {
 		this.socket = socket;
 	}
 	
-	public void setListener(NetworkListener listener) {
-		this.listener = listener;
+	public void setListeners(ArrayList<NetworkListener> listeners) {
+		this.listeners = listeners;
 	}
 	
 	public void start() {
@@ -38,7 +39,7 @@ public class ClientReader implements Runnable {
 				Object input = in.readObject();
 				if (input instanceof DataObject) {
 					DataObject data = (DataObject) input;
-					if (listener != null) {
+					for (NetworkListener listener : listeners) {
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {

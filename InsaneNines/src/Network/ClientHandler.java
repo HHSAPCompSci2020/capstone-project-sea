@@ -123,10 +123,11 @@ public class ClientHandler implements Runnable {
 								ch.out.flush();
 							}
 						} else if (data.messageType.equals(DataObject.INFORMATION)) {
+							server.setHost((String) data.message[0]);
 							for (ClientHandler ch : server.getHandlers()) {
 								DataObject next = new DataObject();
 								next.messageType = DataObject.INFORMATION;
-								next.message = new Object[] {server.getHost(), server.getPort()};
+								next.message = new Object[] {data.message[0], server.getPort()};
 								ch.out.writeObject(next);
 								ch.out.flush();
 							}

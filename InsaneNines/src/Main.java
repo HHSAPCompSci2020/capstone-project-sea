@@ -33,6 +33,8 @@ public class Main implements ActionListener, NetworkListener {
 	private SwingWorker<String, Void> worker;
 
 	public Main() throws IOException {
+		//Server server = new Server();
+		//server.run();
 		
 		f = new JFrame("Welcome Screen");
 		createServer = new JButton("Create Server");
@@ -52,7 +54,6 @@ public class Main implements ActionListener, NetworkListener {
 				+ "\nother card pile will draw a card. You can play cards that have matching"
 				+ "\nnumbers or suits with the last played card or you can play card 9 as a wild"
 				+ "\ncard and choose the next suit.");
-		
 //		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
 //		f.setContentPane(new JLabel(new ImageIcon(img)));
 		
@@ -80,6 +81,7 @@ public class Main implements ActionListener, NetworkListener {
 		//update player label when players join
 		playerCount.setBounds(150, 100, 100, 50);
 		waitRoom.add(playerCount);
+		waitRoom.add(back);
 		waitRoom.add(l);
 		waitRoom.add(serverInfo);
 		waitRoom.setBackground(Color.WHITE);
@@ -94,6 +96,7 @@ public class Main implements ActionListener, NetworkListener {
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
 		f.setSize(500,400);
+
 
 		createServer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -198,8 +201,10 @@ public class Main implements ActionListener, NetworkListener {
 				int players = playerCount.getText().charAt(0) - '0';
 				if (players >= 2) {
 					c.sendMessage(DataObject.START, new Object[] {});
-				//	game = new GamePanel(players);
-					f.setVisible(false);
+					game = new GamePanel(players);
+					f.setContentPane(game);
+					f.invalidate();
+					f.validate();
 				} else {
 					JOptionPane.showMessageDialog(null, "Must have at least 2 players to start.");
 				}
@@ -230,6 +235,7 @@ public class Main implements ActionListener, NetworkListener {
 
 	public static void main(String[] args) throws IOException {
 		new Main();
+
 	}
 
 

@@ -18,8 +18,11 @@ MouseMotionListener{
 	
 	private static final Color BACKGROUND_COLOR = Color.GREEN;
     private static final int   TABLE_SIZE       = 400;    // Pixels.
+    ArrayList<Player> hands;
     
-   GamePanel(){
+   GamePanel(int players){
+	   hands = new ArrayList<Player>();
+	   
 	   
    }
 

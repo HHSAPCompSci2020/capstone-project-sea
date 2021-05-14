@@ -49,14 +49,25 @@ public class ClientHandler implements Runnable {
 							Card card = (Card) data.message[0];
 							Deck played = server.getPlayed();
 							played.addCard(card);
-							AtomicInteger turn = server.getTurn();
-							turn.set((turn.get()+1)%server.getHandlers().size());
-							for (ClientHandler ch : server.getHandlers()) {
-								DataObject next = new DataObject();
-								next.messageType = DataObject.TURN;
-								next.message = new Object[] {turn.get(), card, data.message[1]};
-								ch.out.writeObject(next);
-								ch.out.flush();
+							int numCards = (int) data.message[1];
+							if (numCards > 0) {
+								AtomicInteger turn = server.getTurn();
+								turn.set((turn.get()+1)%server.getHandlers().size());
+								for (ClientHandler ch : server.getHandlers()) {
+									DataObject next = new DataObject();
+									next.messageType = DataObject.TURN;
+									next.message = new Object[] {turn.get(), card, numCards};
+									ch.out.writeObject(next);
+									ch.out.flush();
+								}
+							} else {
+								for (ClientHandler ch : server.getHandlers()) {
+									DataObject next = new DataObject();
+									next.messageType = DataObject.END;
+									next.message = new Object[] {name, card};
+									ch.out.writeObject(next);
+									ch.out.flush();
+								}
 							}
 						} else if (data.messageType.equals(DataObject.DRAW)) {
 							Deck draw = server.getDraw();

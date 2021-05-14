@@ -1,20 +1,14 @@
 package Game;
-import javax.swing.JFrame;
 
-public class Player extends JFrame{
+public class Player {
 	private String name;
 	private int numCards;
 	private Deck hand;
 	
-	//draws your hand 
-	public void setUpGuiDeck() {
-		
-	}
-	
-	public Player(String name, Deck deck) {
+	public Player(String name, Deck hand) {
 		this.name = name;
-		numCards = deck.getDeck().size();
-		hand = deck;
+		numCards = hand.getDeck().size();
+		this.hand = hand;
 	}
 	
 	public Player(String name, int numCards) {
@@ -37,6 +31,15 @@ public class Player extends JFrame{
 
 	public void setNumCards(int numCards) {
 		this.numCards = numCards;
+	}
+	
+	public Deck getHand() {
+		return hand;
+	}
+	
+	public int play(Card card) {
+		hand.getDeck().remove(card);
+		return hand.getDeck().size();
 	}
 	
 	public void draw(Card card) {

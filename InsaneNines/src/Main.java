@@ -23,7 +23,7 @@ import Network.DataObject;
 import Network.NetworkListener;
 import Network.Server;
 
-public class Main implements ActionListener, NetworkListener {
+public class Main implements NetworkListener {
 
 	public static final int GAME_SIZE = 750;
 //	public static String password;
@@ -216,12 +216,6 @@ public class Main implements ActionListener, NetworkListener {
 			}
 			
 		});
-
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
 
 	}
 	

@@ -31,6 +31,7 @@ public class ClientHandler implements Runnable {
 			out.flush();
 			in = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 			looping = true;
+			new Thread(this).start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

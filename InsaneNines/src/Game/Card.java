@@ -2,6 +2,7 @@ package Game;
 
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -25,13 +26,14 @@ public class Card implements Serializable, Comparable<Card> {
 		try {
 			String[] ranks = {"ACE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "JACK", "QUEEN", "KING"};
 			int i = Arrays.asList(ranks).indexOf(rank);
-			char c;
-			if (i >= 2 && i <= 9) {
-				c = (char) (i + '0');
+			String s;
+			if (i >= 2 && i <= 10) {
+				s = String.valueOf(i);
 			} else {
-				c = Character.toLowerCase(ranks[i].charAt(0));
+				s = String.valueOf(ranks[i].charAt(0));
 			}
-			image = new ImageIcon(ImageIO.read(new File("cards" + File.separator + c + Character.toLowerCase(suit.charAt(0)) + ".gif")));
+			image = new ImageIcon(ImageIO.read(new File("Images" + File.separator + "PNG" + File.separator + s + suit.charAt(0) + ".png"))
+					.getScaledInstance(75, 105, Image.SCALE_DEFAULT));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

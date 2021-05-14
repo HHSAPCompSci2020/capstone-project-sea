@@ -84,7 +84,8 @@ public class GamePanel extends JFrame implements NetworkListener {
 			num4 = new JLabel(deck.getDeck().size() + " Cards");
 		}
 		try {
-			draw = new JLabel(new ImageIcon(ImageIO.read(new File("cards" + File.separator + "cardback.png")).getScaledInstance(73, 97, Image.SCALE_DEFAULT)));
+			draw = new JLabel(new ImageIcon(ImageIO.read(new File("Images" + File.separator + "cardback.png"))
+					.getScaledInstance(75, 105, Image.SCALE_DEFAULT)));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}

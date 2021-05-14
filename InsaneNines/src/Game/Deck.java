@@ -1,8 +1,10 @@
 package Game;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Deck{
+public class Deck implements Serializable {
+	private static final long serialVersionUID = -5914402136758018594L;
 	private ArrayList<Card> cards;
 	
 	public Deck() {

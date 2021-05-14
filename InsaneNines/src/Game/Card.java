@@ -5,11 +5,12 @@ import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
-public class Card {
+public class Card implements Comparable<Card> {
 	
 	private ImageIcon image;
 	private String rank;
@@ -74,6 +75,16 @@ public class Card {
 	
 	public boolean canPlay(Card top) {
 		return rank.equals(top.rank) || suit.equals(top.suit) || isNine();
+	}
+
+	@Override
+	public int compareTo(Card o) {
+		if (suit.equals(o.suit)) {
+			String[] ranks = {"ACE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "JACK", "QUEEN", "KING"};
+			List<String> ranks2 = Arrays.asList(ranks);
+			return Integer.compare(ranks2.indexOf(rank), ranks2.indexOf(o.rank));
+		}
+		return suit.compareTo(o.suit);
 	}
 }
 

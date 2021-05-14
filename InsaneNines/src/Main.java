@@ -1,24 +1,27 @@
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 
 import Game.Deck;
 import Game.GamePanel;
-import Game.Player;
 import Network.Client;
 import Network.DataObject;
 import Network.NetworkListener;
 import Network.Server;
-
-import java.awt.event.*;
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-
-import javax.swing.*;
 
 public class Main implements ActionListener, NetworkListener {
 
@@ -207,7 +210,6 @@ public class Main implements ActionListener, NetworkListener {
 				int players = playerCount.getText().charAt(0) - '0';
 				if (players >= 2) {
 					c.sendMessage(DataObject.START, new Object[] {names});
-					f.setVisible(false);
 				} else {
 					JOptionPane.showMessageDialog(null, "Must have at least 2 players to start.");
 				}
@@ -240,9 +242,7 @@ public class Main implements ActionListener, NetworkListener {
 		} else if (data.messageType.equals(DataObject.START)) {
 			game = new GamePanel(name, (ArrayList<String>) data.message[0], (Deck) data.message[1]);
 			c.addListener((NetworkListener) game);
-			f.setContentPane(game);
-			f.invalidate();
-			f.validate();
+			f.setVisible(false);
 		}
 	}
 

@@ -241,7 +241,6 @@ public class Main implements NetworkListener {
 
 	public static void main(String[] args) throws IOException {
 		new Main();
-
 	}
 
 

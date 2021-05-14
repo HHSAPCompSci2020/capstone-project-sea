@@ -1,15 +1,10 @@
 package Game;
 
-import java.awt.Component;
-import java.awt.Graphics;
 import java.awt.Image;
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 public class Card implements Serializable, Comparable<Card> {
@@ -17,43 +12,20 @@ public class Card implements Serializable, Comparable<Card> {
 	private ImageIcon image;
 	private String rank;
 	private String suit;
-	private int x;
-	private int y;
 	
 	public Card(String rank, String suit) {
 		this.rank = rank;
 		this.suit = suit;
-		try {
-			String[] ranks = {"ACE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "JACK", "QUEEN", "KING"};
-			int i = Arrays.asList(ranks).indexOf(rank);
-			String s;
-			if (i >= 2 && i <= 10) {
-				s = String.valueOf(i);
-			} else {
-				s = String.valueOf(ranks[i].charAt(0));
-			}
-			image = new ImageIcon(ImageIO.read(new File("Images" + File.separator + "PNG" + File.separator + s + suit.charAt(0) + ".png"))
-					.getScaledInstance(75, 105, Image.SCALE_DEFAULT));
-		} catch (IOException e) {
-			e.printStackTrace();
+		String[] ranks = {"ACE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "JACK", "QUEEN", "KING"};
+		int i = Arrays.asList(ranks).indexOf(rank);
+		String s;
+		if (i >= 2 && i <= 10) {
+			s = String.valueOf(i);
+		} else {
+			s = String.valueOf(ranks[i].charAt(0));
 		}
-	}
-	
-	public void draw(Graphics g, Component c) {
-		image.paintIcon(c, g, x, y);
-	}
-	
-	public void moveTo(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-	
-	public int getX() {
-		return x;
-	}
-	
-	public int getY() {
-		return y;
+		image = new ImageIcon(new ImageIcon(getClass().getResource("Images/PNG/" + s + suit.charAt(0) + ".png")).getImage()
+				.getScaledInstance(75, 105, Image.SCALE_DEFAULT));
 	}
 	
 	public boolean isNine() {

@@ -52,7 +52,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 			JLabel cardLabel = new JLabel(card.getImage());
 			cardLabel.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
-					if (myTurn) {
+					if (myTurn && card.canPlay(top)) {
 						myTurn = false;
 						int numCards = players.get(pos).play(card);
 						cards.remove(cardLabel);
@@ -83,12 +83,8 @@ public class GamePanel extends JFrame implements NetworkListener {
 			name4 = new JLabel(names.get(3));
 			num4 = new JLabel(deck.getDeck().size() + " Cards");
 		}
-		try {
-			draw = new JLabel(new ImageIcon(ImageIO.read(new File("Images" + File.separator + "cardback.png"))
-					.getScaledInstance(75, 105, Image.SCALE_DEFAULT)));
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		draw = new JLabel(new ImageIcon(new ImageIcon(getClass().getResource("Images/cardback.png")).getImage()
+				.getScaledInstance(75, 105, Image.SCALE_DEFAULT)));
 		draw.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (myTurn) {
@@ -160,7 +156,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 			JLabel cardLabel = new JLabel(card.getImage());
 			cardLabel.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
-					if (myTurn) {
+					if (myTurn && card.canPlay(top)) {
 						myTurn = false;
 						int numCards = players.get(pos).play(card);
 						cards.remove(cardLabel);

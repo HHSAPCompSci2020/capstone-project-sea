@@ -17,7 +17,6 @@ import Network.NetworkListener;
 
 public class GamePanel extends JFrame implements MouseListener, MouseMotionListener, NetworkListener {
 	private static final Color BACKGROUND_COLOR = Color.GREEN;
-	private static final int TABLE_SIZE = 400; // Pixels.
 	private JPanel middle, cards, area1, area2, area3, area4, area5;
 	private JLabel playerTurn, name1, name2, name3, name4, num1, num2, num3, num4, draw, topLabel;
 	private int pos;

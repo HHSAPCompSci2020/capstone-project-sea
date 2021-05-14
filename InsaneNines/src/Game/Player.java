@@ -22,6 +22,14 @@ public class Player extends JFrame{
 		this.numCards = numCards;
 		hand = null;
 	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public int getNumCards() {
 		return numCards;
@@ -29,6 +37,10 @@ public class Player extends JFrame{
 
 	public void setNumCards(int numCards) {
 		this.numCards = numCards;
+	}
+	
+	public void draw(Card card) {
+		hand.addCard(card);
 	}
 	
 }

@@ -104,7 +104,7 @@ public class ClientHandler implements Runnable {
 							for (ClientHandler ch : server.getHandlers()) {
 								DataObject next = new DataObject();
 								next.messageType = DataObject.TURN;
-								next.message = new Object[] {server.getTurn().get(), server.getPlayed().getTop(), cards};
+								next.message = new Object[] {server.getTurn().get(), server.getPlayed().getTop(), -1};
 								ch.out.writeObject(next);
 								ch.out.flush();
 							}

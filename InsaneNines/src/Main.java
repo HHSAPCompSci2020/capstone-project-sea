@@ -240,8 +240,8 @@ public class Main implements ActionListener, NetworkListener {
 		} else if (data.messageType.equals(DataObject.INFORMATION)) {
 			serverInfo.setText("IP Address: " + data.message[0] + "\nPort Number: " + data.message[1]);
 		} else if (data.messageType.equals(DataObject.START)) {
-			game = new GamePanel(name, (ArrayList<String>) data.message[0], (Deck) data.message[1]);
-			c.addListener((NetworkListener) game);
+			game = new GamePanel(c, name, (ArrayList<String>) data.message[0], (Deck) data.message[1]);
+			c.addListener(game);
 			f.setVisible(false);
 		}
 	}

@@ -54,7 +54,7 @@ public class Server implements Runnable {
 		while (handlers.size() < maxClients && !started.get()) {
 			try {
 				Socket client = server.accept();
-				ClientHandler handler = new ClientHandler(client, "" + handlers.size(), this);
+				ClientHandler handler = new ClientHandler(client, "Player " + (handlers.size() + 1), this);
 				handler.start();
 				handlers.add(handler);
 				count++;

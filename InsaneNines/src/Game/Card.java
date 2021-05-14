@@ -73,6 +73,10 @@ public class Card implements Comparable<Card> {
 		return suit;
 	}
 	
+	public ImageIcon getImage() {
+		return image;
+	}
+
 	public boolean canPlay(Card top) {
 		return rank.equals(top.rank) || suit.equals(top.suit) || isNine();
 	}

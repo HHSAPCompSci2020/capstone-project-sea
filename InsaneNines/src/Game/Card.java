@@ -4,27 +4,20 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
-public class Card implements Comparable<Card> {
-	
+public class Card implements Serializable, Comparable<Card> {
+	private static final long serialVersionUID = -3522929388750816698L;
 	private ImageIcon image;
 	private String rank;
 	private String suit;
 	private int x;
 	private int y;
-	
-	
-	
-	public Card(ImageIcon image, String rank, String suit){
-		this.rank = rank;
-		this.suit = suit;
-		this.image = image;
-	}
 	
 	public Card(String rank, String suit) {
 		this.rank = rank;

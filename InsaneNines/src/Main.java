@@ -230,7 +230,6 @@ public class Main implements NetworkListener {
 			if (data.message[2] != null) {
 				serverInfo.setText("IP Address: " + data.message[2] + "\nPort Number: " + data.message[3]);
 			}
-			System.out.println("poggers");
 		} else if (data.messageType.equals(DataObject.INFORMATION)) {
 			serverInfo.setText("IP Address: " + data.message[0] + "\nPort Number: " + data.message[1]);
 		} else if (data.messageType.equals(DataObject.START)) {

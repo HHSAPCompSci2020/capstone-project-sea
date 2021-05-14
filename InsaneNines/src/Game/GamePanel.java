@@ -1,33 +1,31 @@
 package Game;
+
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import Network.DataObject;
 import Network.NetworkListener;
 
 public class GamePanel extends JFrame implements MouseListener, MouseMotionListener, NetworkListener {
 	private static final Color BACKGROUND_COLOR = Color.GREEN;
-    private static final int   TABLE_SIZE       = 400;    // Pixels.
+	private static final int TABLE_SIZE = 400; // Pixels.
 	private int pos;
+	private boolean myTurn;
+	private Card top;
 	private ArrayList<Player> players;
 
 	public GamePanel(String name, ArrayList<String> names, Deck deck) {
-		JFrame game = new JFrame();
-	   game.setResizable(false);
-	   game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	   game.setVisible(true);
-	   game.setSize(500,400);
+		setResizable(false);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setVisible(true);
+		setSize(500, 400);
+		myTurn = false;
+		top = null;
 		players = new ArrayList<Player>();
 		for (int i = 0; i < names.size(); i++) {
 			if (names.get(i).equals(name)) {
@@ -41,7 +39,15 @@ public class GamePanel extends JFrame implements MouseListener, MouseMotionListe
 
 	@Override
 	public void messageReceived(DataObject data) {
-		
+		if (data.messageType.equals(DataObject.TURN)) {
+			int turn = (int) data.message[0];
+			if (turn == pos) {
+				myTurn = true;
+				top = (Card) data.message[1];
+			} else {
+				players.get(turn).setNumCards((int) data.message[2]);
+			}
+		}
 	}
 
 	@Override
@@ -85,5 +91,4 @@ public class GamePanel extends JFrame implements MouseListener, MouseMotionListe
 		// TODO Auto-generated method stub
 		
 	}
-
 }

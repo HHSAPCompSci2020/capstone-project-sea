@@ -48,18 +48,15 @@ public class ClientHandler implements Runnable {
 						if (data.messageType.equals(DataObject.PLAY)) {
 							Card card = (Card) data.message[0];
 							Deck played = server.getPlayed();
-							//if (Card.isValid(card, played.getTop())) {
-							if(10==10) {
-								played.addCard(card);
-								AtomicInteger turn = server.getTurn();
-								turn.set((turn.get()+1)%server.getHandlers().size());
-								for (ClientHandler ch : server.getHandlers()) {
-									DataObject next = new DataObject();
-									next.messageType = DataObject.TURN;
-									next.message = new Object[] {turn.get(), card};
-									ch.out.writeObject(next);
-									ch.out.flush();
-								}
+							played.addCard(card);
+							AtomicInteger turn = server.getTurn();
+							turn.set((turn.get()+1)%server.getHandlers().size());
+							for (ClientHandler ch : server.getHandlers()) {
+								DataObject next = new DataObject();
+								next.messageType = DataObject.TURN;
+								next.message = new Object[] {turn.get(), card, data.message[1]};
+								ch.out.writeObject(next);
+								ch.out.flush();
 							}
 						} else if (data.messageType.equals(DataObject.DRAW)) {
 							Deck draw = server.getDraw();
@@ -88,30 +85,28 @@ public class ClientHandler implements Runnable {
 								ch.out.flush();
 							}
 						} else if (data.messageType.equals(DataObject.START)) {
-							if (server.getHandlers().size() >= server.getMinClients()) {
-								server.getStarted().set(true);
-								int cards = 5;
-								if (server.getHandlers().size() == server.getMinClients()) {
-									cards = 7;
+							server.getStarted().set(true);
+							int cards = 5;
+							if (server.getHandlers().size() == server.getMinClients()) {
+								cards = 7;
+							}
+							for (ClientHandler ch : server.getHandlers()) {
+								Deck deck = new Deck();
+								for (int i = 0; i < cards; i++) {
+									deck.addCard(server.getDraw().removeTop());
 								}
-								for (ClientHandler ch : server.getHandlers()) {
-									Deck deck = new Deck();
-									for (int i = 0; i < cards; i++) {
-										deck.addCard(server.getDraw().removeTop());
-									}
-									DataObject next = new DataObject();
-									next.messageType = DataObject.START;
-									next.message = new Object[] {data.message[0], deck};
-									ch.out.writeObject(next);
-									ch.out.flush();
-								}
-								for (ClientHandler ch : server.getHandlers()) {
-									DataObject next = new DataObject();
-									next.messageType = DataObject.TURN;
-									next.message = new Object[] {server.getTurn().get(), server.getPlayed().getTop()};
-									ch.out.writeObject(next);
-									ch.out.flush();
-								}
+								DataObject next = new DataObject();
+								next.messageType = DataObject.START;
+								next.message = new Object[] {data.message[0], deck};
+								ch.out.writeObject(next);
+								ch.out.flush();
+							}
+							for (ClientHandler ch : server.getHandlers()) {
+								DataObject next = new DataObject();
+								next.messageType = DataObject.TURN;
+								next.message = new Object[] {server.getTurn().get(), server.getPlayed().getTop(), cards};
+								ch.out.writeObject(next);
+								ch.out.flush();
 							}
 						} else if (data.messageType.equals(DataObject.DISCONNECT)) {
 							server.getHandlers().remove(this);

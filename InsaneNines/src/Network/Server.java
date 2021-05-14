@@ -40,7 +40,7 @@ public class Server implements Runnable {
 		String[] suits = {"CLUBS", "DIAMONDS", "HEARTS", "SPADES"};
 		for (String rank : ranks) {
 			for (String suit : suits) {
-				//draw.addCard(new Card(rank, suit));
+				draw.addCard(new Card(rank, suit));
 			}
 		}
 		draw.shuffle();

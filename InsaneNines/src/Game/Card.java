@@ -2,7 +2,11 @@ package Game;
 
 import java.awt.Component;
 import java.awt.Graphics;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 public class Card {
@@ -19,6 +23,24 @@ public class Card {
 		this.rank = rank;
 		this.suit = suit;
 		this.image = image;
+	}
+	
+	public Card(String rank, String suit) {
+		this.rank = rank;
+		this.suit = suit;
+		try {
+			String[] ranks = {"ACE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "JACK", "QUEEN", "KING"};
+			int i = Arrays.asList(ranks).indexOf(rank);
+			char c;
+			if (i >= 2 && i <= 9) {
+				c = (char) (i + '0');
+			} else {
+				c = Character.toLowerCase(ranks[i].charAt(0));
+			}
+			image = new ImageIcon(ImageIO.read(new File("cards" + File.separator + c + Character.toLowerCase(suit.charAt(0)) + ".gif")));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void draw(Graphics g, Component c) {
@@ -50,8 +72,8 @@ public class Card {
 		return suit;
 	}
 	
-	public static boolean isValid(Card a, Card b) {
-		return a.rank.equals(b.rank) || a.suit.equals(b.suit) || a.isNine();
+	public boolean canPlay(Card top) {
+		return rank.equals(top.rank) || suit.equals(top.suit) || isNine();
 	}
 }
 

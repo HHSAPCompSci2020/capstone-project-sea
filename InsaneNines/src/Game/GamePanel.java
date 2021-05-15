@@ -47,7 +47,8 @@ public class GamePanel extends JFrame implements NetworkListener {
 		this.client = client;
 		playerTurn = new JLabel();
 		middle = new JPanel(new BorderLayout());
-		cards = new JPanel(new BoxLayout(cards, BoxLayout.X_AXIS));
+		cards = new JPanel();
+		cards.setLayout(new BoxLayout(cards, BoxLayout.X_AXIS));
 		for (Card card : deck.getDeck()) {
 			JLabel cardLabel = new JLabel(card.getImage());
 			cardLabel.addMouseListener(new MouseAdapter() {
@@ -65,11 +66,16 @@ public class GamePanel extends JFrame implements NetworkListener {
 			cards.add(cardLabel);
 		}
 		
-		area1 = new JPanel(new BoxLayout(area1, BoxLayout.Y_AXIS));
-		area2 = new JPanel(new BoxLayout(area2, BoxLayout.Y_AXIS));
-		area3 = new JPanel(new BoxLayout(area3, BoxLayout.Y_AXIS));
-		area4 = new JPanel(new BoxLayout(area4, BoxLayout.Y_AXIS));
-		area5 = new JPanel(new BoxLayout(area5, BoxLayout.X_AXIS));
+		area1 = new JPanel();
+		area1.setLayout(new BoxLayout(area1, BoxLayout.Y_AXIS));
+		area2 = new JPanel();
+		area2.setLayout(new BoxLayout(area2, BoxLayout.Y_AXIS));
+		area3 = new JPanel();
+		area3.setLayout(new BoxLayout(area3, BoxLayout.Y_AXIS));
+		area4 = new JPanel();
+		area4.setLayout(new BoxLayout(area4, BoxLayout.Y_AXIS));
+		area5 = new JPanel();
+		area5.setLayout(new BoxLayout(area5, BoxLayout.X_AXIS));
 		
 		name1 = new JLabel(names.get(0));
 		name2 = new JLabel(names.get(1));

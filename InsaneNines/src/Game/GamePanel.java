@@ -32,9 +32,10 @@ public class GamePanel extends JFrame implements NetworkListener {
 	private ArrayList<Player> players;
 	private Client client;
 
-	public GamePanel(Client client, String name, ArrayList<String> names, Deck deck) {
+	public GamePanel(Client client, String name, ArrayList<String> names, Deck deck, int turn, Card top) {
 		myTurn = false;
-		top = null;
+		this.turn = turn;
+		this.top = top;
 		players = new ArrayList<Player>();
 		for (int i = 0; i < names.size(); i++) {
 			if (names.get(i).equals(name)) {
@@ -46,9 +47,14 @@ public class GamePanel extends JFrame implements NetworkListener {
 		}
 		this.client = client;
 		playerTurn = new JLabel();
+		if (turn == pos) {
+			myTurn = true;
+			playerTurn.setText(players.get(pos).getName() + "'s Turn (you)");
+		} else {
+			playerTurn.setText(players.get(turn).getName() + "'s Turn");
+		}
 		middle = new JPanel(new BorderLayout());
 		cards = new JPanel();
-		cards.setLayout(new BoxLayout(cards, BoxLayout.X_AXIS));
 		for (Card card : deck.getDeck()) {
 			JLabel cardLabel = new JLabel(card.getImage());
 			cardLabel.addMouseListener(new MouseAdapter() {
@@ -102,7 +108,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 				}
 			}
 		});
-		topLabel = new JLabel();
+		topLabel = new JLabel(top.getImage());
 		
 		area1.add(name1);
 		area1.add(num1);
@@ -145,18 +151,16 @@ public class GamePanel extends JFrame implements NetworkListener {
 				playerTurn.setText(players.get(turn).getName() + "'s Turn");
 			}
 			int numCards = (int) data.message[2];
-			if (numCards != -1) {
-				int prevTurn = (turn - 1) % players.size();
-				players.get(prevTurn).setNumCards(numCards);
-				if (prevTurn == 0) {
-					num1.setText(numCards + " Cards");
-				} else if (prevTurn == 1) {
-					num2.setText(numCards + " Cards");
-				} else if (prevTurn == 2) {
-					num3.setText(numCards + " Cards");
-				} else {
-					num4.setText(numCards + " Cards");
-				}
+			int prevTurn = (turn - 1) % players.size();
+			players.get(prevTurn).setNumCards(numCards);
+			if (prevTurn == 0) {
+				num1.setText(numCards + " Cards");
+			} else if (prevTurn == 1) {
+				num2.setText(numCards + " Cards");
+			} else if (prevTurn == 2) {
+				num3.setText(numCards + " Cards");
+			} else {
+				num4.setText(numCards + " Cards");
 			}
 			revalidate();
 			repaint();

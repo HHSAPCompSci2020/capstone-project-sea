@@ -109,14 +109,7 @@ public class ClientHandler implements Runnable {
 								}
 								DataObject next = new DataObject();
 								next.messageType = DataObject.START;
-								next.message = new Object[] {data.message[0], deck};
-								ch.out.writeObject(next);
-								ch.out.flush();
-							}
-							for (ClientHandler ch : server.getHandlers()) {
-								DataObject next = new DataObject();
-								next.messageType = DataObject.TURN;
-								next.message = new Object[] {server.getTurn().get(), server.getPlayed().getTop(), -1};
+								next.message = new Object[] {data.message[0], deck, server.getTurn().get(), server.getPlayed().getTop()};
 								ch.out.writeObject(next);
 								ch.out.flush();
 							}

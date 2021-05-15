@@ -81,13 +81,17 @@ public class GamePanel extends JFrame implements NetworkListener {
 		name2 = new JLabel(names.get(1));
 		num1 = new JLabel(deck.getDeck().size() + " Cards");
 		num2 = new JLabel(deck.getDeck().size() + " Cards");
+		name3 = new JLabel();
+		num3 = new JLabel();
+		name4 = new JLabel();
+		num4 = new JLabel();
 		if (names.size() >= 3) {
-			name3 = new JLabel(names.get(2));
-			num3 = new JLabel(deck.getDeck().size() + " Cards");
+			name3.setText(names.get(2));
+			num3.setText(deck.getDeck().size() + " Cards");
 		}
 		if (names.size() == 4) {
-			name4 = new JLabel(names.get(3));
-			num4 = new JLabel(deck.getDeck().size() + " Cards");
+			name4.setText(names.get(3));
+			num4.setText(deck.getDeck().size() + " Cards");
 		}
 		draw = new JLabel(new ImageIcon(new ImageIcon(getClass().getResource("/cardback.png")).getImage()
 				.getScaledInstance(75, 105, Image.SCALE_DEFAULT)));

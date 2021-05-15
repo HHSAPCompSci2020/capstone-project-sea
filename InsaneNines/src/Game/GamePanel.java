@@ -2,6 +2,7 @@ package Game;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import Network.Client;
 import Network.DataObject;
@@ -24,6 +26,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 	private static final long serialVersionUID = 9043093457846944651L;
 	private static final Color BACKGROUND_COLOR = Color.GREEN;
 	private JPanel middle, cards, area1, area2, area3, area4, area5;
+	private JScrollPane pane;
 	private JLabel playerTurn, name1, name2, name3, name4, num1, num2, num3, num4, draw, topLabel;
 	private int pos;
 	private int turn;
@@ -53,11 +56,16 @@ public class GamePanel extends JFrame implements NetworkListener {
 		playerTurn.setText(players.get(turn).getName() + "'s Turn");
 		middle = new JPanel(new BorderLayout());
 		cards = new JPanel();
+		cards.setPreferredSize(new Dimension(600, 1000));
+		pane = new JScrollPane(cards);
+		cards.setAutoscrolls(true);
+		pane.setPreferredSize(new Dimension(600, 300));
+		pane.getVerticalScrollBar().setUnitIncrement(10);
 		for (Card card : deck.getDeck()) {
 			JLabel cardLabel = new JLabel(card.getImage());
 			cardLabel.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
-					if (myTurn && card.canPlay(top)) {
+					if (myTurn && card.canPlay(GamePanel.this.top)) {
 						myTurn = false;
 						int numCards = players.get(pos).play(card);
 						cards.remove(cardLabel);
@@ -140,7 +148,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 		
 		add(playerTurn, BorderLayout.NORTH);
 		add(middle, BorderLayout.CENTER);
-		add(cards, BorderLayout.SOUTH);
+		add(pane, BorderLayout.SOUTH);
 		
 		setBackground(BACKGROUND_COLOR);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

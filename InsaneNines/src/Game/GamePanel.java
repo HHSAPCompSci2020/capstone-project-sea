@@ -49,10 +49,8 @@ public class GamePanel extends JFrame implements NetworkListener {
 		playerTurn = new JLabel();
 		if (turn == pos) {
 			myTurn = true;
-			playerTurn.setText(players.get(pos).getName() + "'s Turn (you)");
-		} else {
-			playerTurn.setText(players.get(turn).getName() + "'s Turn");
 		}
+		playerTurn.setText(players.get(turn).getName() + "'s Turn");
 		middle = new JPanel(new BorderLayout());
 		cards = new JPanel();
 		for (Card card : deck.getDeck()) {
@@ -63,6 +61,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 						myTurn = false;
 						int numCards = players.get(pos).play(card);
 						cards.remove(cardLabel);
+						pack();
 						revalidate();
 						repaint();
 						client.sendMessage(DataObject.PLAY, new Object[] {card, numCards});
@@ -84,7 +83,13 @@ public class GamePanel extends JFrame implements NetworkListener {
 		area5.setLayout(new BoxLayout(area5, BoxLayout.X_AXIS));
 		
 		name1 = new JLabel(names.get(0));
+		if (pos == 0) {
+			name1.setText(name1.getText() + " (you)");
+		}
 		name2 = new JLabel(names.get(1));
+		if (pos == 1) {
+			name2.setText(name2.getText() + " (you)");
+		}
 		num1 = new JLabel(deck.getDeck().size() + " Cards");
 		num2 = new JLabel(deck.getDeck().size() + " Cards");
 		name3 = new JLabel();
@@ -93,10 +98,16 @@ public class GamePanel extends JFrame implements NetworkListener {
 		num4 = new JLabel();
 		if (names.size() >= 3) {
 			name3.setText(names.get(2));
+			if (pos == 2) {
+				name3.setText(name3.getText() + " (you)");
+			}
 			num3.setText(deck.getDeck().size() + " Cards");
 		}
 		if (names.size() == 4) {
 			name4.setText(names.get(3));
+			if (pos == 3) {
+				name4.setText(name4.getText() + " (you)");
+			}
 			num4.setText(deck.getDeck().size() + " Cards");
 		}
 		draw = new JLabel(new ImageIcon(new ImageIcon(getClass().getResource("/cardback.png")).getImage()
@@ -132,10 +143,10 @@ public class GamePanel extends JFrame implements NetworkListener {
 		add(cards, BorderLayout.SOUTH);
 		
 		setBackground(BACKGROUND_COLOR);
-		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 		setSize(500, 400);
+		pack();
 	}
 
 	@Override
@@ -146,12 +157,10 @@ public class GamePanel extends JFrame implements NetworkListener {
 			topLabel.setIcon(top.getImage());
 			if (turn == pos) {
 				myTurn = true;
-				playerTurn.setText(players.get(pos).getName() + "'s Turn (you)");
-			} else {
-				playerTurn.setText(players.get(turn).getName() + "'s Turn");
 			}
+			playerTurn.setText(players.get(turn).getName() + "'s Turn");
 			int numCards = (int) data.message[2];
-			int prevTurn = (turn - 1) % players.size();
+			int prevTurn = (turn - 1 + players.size()) % players.size();
 			players.get(prevTurn).setNumCards(numCards);
 			if (prevTurn == 0) {
 				num1.setText(numCards + " Cards");
@@ -162,11 +171,12 @@ public class GamePanel extends JFrame implements NetworkListener {
 			} else {
 				num4.setText(numCards + " Cards");
 			}
+			pack();
 			revalidate();
 			repaint();
 		} else if (data.messageType.equals(DataObject.DRAW)) {
 			Card card = (Card) data.message[0];
-			players.get(pos).draw(card);
+			int numCards = players.get(pos).draw(card);
 			JLabel cardLabel = new JLabel(card.getImage());
 			cardLabel.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
@@ -174,6 +184,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 						myTurn = false;
 						int numCards = players.get(pos).play(card);
 						cards.remove(cardLabel);
+						pack();
 						revalidate();
 						repaint();
 						client.sendMessage(DataObject.PLAY, new Object[] {card, numCards});
@@ -181,6 +192,16 @@ public class GamePanel extends JFrame implements NetworkListener {
 				}
 			});
 			cards.add(cardLabel);
+			if (pos == 0) {
+				num1.setText(numCards + " Cards");
+			} else if (pos == 1) {
+				num2.setText(numCards + " Cards");
+			} else if (pos == 2) {
+				num3.setText(numCards + " Cards");
+			} else {
+				num4.setText(numCards + " Cards");
+			}
+			pack();
 			revalidate();
 			repaint();
 			
@@ -197,6 +218,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 				num4.setText("0 Cards");
 			}
 			topLabel.setIcon(((Card) data.message[1]).getImage());
+			pack();
 			revalidate();
 			repaint();
 		}

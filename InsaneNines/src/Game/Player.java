@@ -42,8 +42,9 @@ public class Player {
 		return hand.getDeck().size();
 	}
 	
-	public void draw(Card card) {
+	public int draw(Card card) {
 		hand.addCard(card);
+		return hand.getDeck().size();
 	}
 	
 }

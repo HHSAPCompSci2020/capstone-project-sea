@@ -16,6 +16,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
+import Game.Card;
 import Game.Deck;
 import Game.GamePanel;
 import Network.Client;
@@ -233,7 +234,8 @@ public class Main implements NetworkListener {
 		} else if (data.messageType.equals(DataObject.INFORMATION)) {
 			serverInfo.setText("IP Address: " + data.message[0] + "\nPort Number: " + data.message[1]);
 		} else if (data.messageType.equals(DataObject.START)) {
-			game = new GamePanel(c, name, (ArrayList<String>) data.message[0], (Deck) data.message[1]);
+			game = new GamePanel(c, name, (ArrayList<String>) data.message[0], (Deck) data.message[1],
+					(int) data.message[2], (Card) data.message[3]);
 			c.addListener(game);
 			f.setVisible(false);
 		}

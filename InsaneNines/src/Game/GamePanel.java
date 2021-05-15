@@ -2,7 +2,9 @@ package Game;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -11,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -54,6 +57,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 			myTurn = true;
 		}
 		playerTurn.setText(players.get(turn).getName() + "'s Turn");
+		playerTurn.setFont(new Font("Serif", Font.PLAIN, 30));
 		middle = new JPanel(new BorderLayout());
 		cards = new JPanel();
 		cards.setPreferredSize(new Dimension(600, 1000));
@@ -69,7 +73,6 @@ public class GamePanel extends JFrame implements NetworkListener {
 						myTurn = false;
 						int numCards = players.get(pos).play(card);
 						cards.remove(cardLabel);
-						pack();
 						revalidate();
 						repaint();
 						client.sendMessage(DataObject.PLAY, new Object[] {card, numCards});
@@ -94,16 +97,24 @@ public class GamePanel extends JFrame implements NetworkListener {
 		if (pos == 0) {
 			name1.setText(name1.getText() + " (you)");
 		}
+		name1.setAlignmentX(Component.CENTER_ALIGNMENT);
 		name2 = new JLabel(names.get(1));
 		if (pos == 1) {
 			name2.setText(name2.getText() + " (you)");
 		}
+		name2.setAlignmentX(Component.CENTER_ALIGNMENT);
 		num1 = new JLabel(deck.getDeck().size() + " Cards");
+		num1.setAlignmentX(Component.CENTER_ALIGNMENT);
 		num2 = new JLabel(deck.getDeck().size() + " Cards");
-		name3 = new JLabel();
-		num3 = new JLabel();
-		name4 = new JLabel();
-		num4 = new JLabel();
+		num2.setAlignmentX(Component.CENTER_ALIGNMENT);
+		name3 = new JLabel("None");
+		name3.setAlignmentX(Component.CENTER_ALIGNMENT);
+		num3 = new JLabel("None");
+		num3.setAlignmentX(Component.CENTER_ALIGNMENT);
+		name4 = new JLabel("None");
+		name4.setAlignmentX(Component.CENTER_ALIGNMENT);
+		num4 = new JLabel("None");
+		num4.setAlignmentX(Component.CENTER_ALIGNMENT);
 		if (names.size() >= 3) {
 			name3.setText(names.get(2));
 			if (pos == 2) {
@@ -127,7 +138,9 @@ public class GamePanel extends JFrame implements NetworkListener {
 				}
 			}
 		});
+		draw.setAlignmentX(Component.CENTER_ALIGNMENT);
 		topLabel = new JLabel(top.getImage());
+		topLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		area1.add(name1);
 		area1.add(num1);
@@ -137,8 +150,10 @@ public class GamePanel extends JFrame implements NetworkListener {
 		area3.add(num3);
 		area4.add(name4);
 		area4.add(num4);
+		area5.add(Box.createHorizontalGlue());
 		area5.add(draw);
 		area5.add(topLabel);
+		area5.add(Box.createHorizontalGlue());
 		
 		middle.add(area1, BorderLayout.NORTH);
 		middle.add(area2, BorderLayout.EAST);
@@ -179,7 +194,6 @@ public class GamePanel extends JFrame implements NetworkListener {
 			} else {
 				num4.setText(numCards + " Cards");
 			}
-			pack();
 			revalidate();
 			repaint();
 		} else if (data.messageType.equals(DataObject.DRAW)) {
@@ -192,7 +206,6 @@ public class GamePanel extends JFrame implements NetworkListener {
 						myTurn = false;
 						int numCards = players.get(pos).play(card);
 						cards.remove(cardLabel);
-						pack();
 						revalidate();
 						repaint();
 						client.sendMessage(DataObject.PLAY, new Object[] {card, numCards});
@@ -209,7 +222,6 @@ public class GamePanel extends JFrame implements NetworkListener {
 			} else {
 				num4.setText(numCards + " Cards");
 			}
-			pack();
 			revalidate();
 			repaint();
 			
@@ -226,7 +238,6 @@ public class GamePanel extends JFrame implements NetworkListener {
 				num4.setText("0 Cards");
 			}
 			topLabel.setIcon(((Card) data.message[1]).getImage());
-			pack();
 			revalidate();
 			repaint();
 		}

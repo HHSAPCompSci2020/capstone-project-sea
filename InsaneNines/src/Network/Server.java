@@ -45,6 +45,21 @@ public class Server implements Runnable {
 		played.addCard(draw.removeTop());
 		turn = new AtomicInteger();
 		started = new AtomicBoolean();
+		new Thread(new Runnable() {
+			public void run() {
+				for (Card card : draw.getDeck()) {
+					synchronized (card) {
+						card.createImage();
+					}
+				}
+				for (Card card : played.getDeck()) {
+					synchronized (card) {
+						card.createImage();
+					}
+				}
+			}
+			
+		}).start();
 	}
 
 	@Override

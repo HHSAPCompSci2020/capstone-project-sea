@@ -16,16 +16,7 @@ public class Card implements Serializable, Comparable<Card> {
 	public Card(String rank, String suit) {
 		this.rank = rank;
 		this.suit = suit;
-		String[] ranks = {"ACE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "JACK", "QUEEN", "KING"};
-		int i = Arrays.asList(ranks).indexOf(rank);
-		String s;
-		if (i >= 2 && i <= 10) {
-			s = String.valueOf(i);
-		} else {
-			s = String.valueOf(ranks[i].charAt(0));
-		}
-		image = new ImageIcon(new ImageIcon(getClass().getResource("Images/PNG/" + s + suit.charAt(0) + ".png")).getImage()
-				.getScaledInstance(75, 105, Image.SCALE_DEFAULT));
+		image = null;
 	}
 	
 	public boolean isNine() {
@@ -42,6 +33,19 @@ public class Card implements Serializable, Comparable<Card> {
 	
 	public ImageIcon getImage() {
 		return image;
+	}
+	
+	public void createImage() {
+		String[] ranks = {"ACE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "JACK", "QUEEN", "KING"};
+		int i = Arrays.asList(ranks).indexOf(rank);
+		String s;
+		if (i + 1 >= 2 && i + 1 <= 10) {
+			s = String.valueOf(i + 1);
+		} else {
+			s = String.valueOf(ranks[i].charAt(0));
+		}
+		image = new ImageIcon(new ImageIcon(getClass().getResource("/PNG/" + s + suit.charAt(0) + ".png")).getImage()
+				.getScaledInstance(75, 105, Image.SCALE_DEFAULT));
 	}
 
 	public boolean canPlay(Card top) {

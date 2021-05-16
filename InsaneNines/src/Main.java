@@ -16,18 +16,22 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
-import Game.Card;
-import Game.Deck;
-import Game.GamePanel;
-import Network.Client;
-import Network.DataObject;
-import Network.NetworkListener;
-import Network.Server;
+import game.Card;
+import game.Deck;
+import game.GamePanel;
+import network.Client;
+import network.DataObject;
+import network.NetworkListener;
+import network.Server;
 
+/**
+ * The main class to be run.
+ * 
+ * @author Andy Ding
+ */
 public class Main implements NetworkListener {
 
-	public static final int GAME_SIZE = 750;
-//	public static String password;
+	//public static final int GAME_SIZE = 750;
 	private JFrame f;
 	private GamePanel game;
 	private JPanel menu, instructions, waitRoom;
@@ -40,10 +44,10 @@ public class Main implements NetworkListener {
 	private ArrayList<String> names;
 	private SwingWorker<String, Void> worker;
 
-	public Main() throws IOException {
-		//Server server = new Server();
-		//server.run();
-		
+	/**
+	 * Displays the start menu.
+	 */
+	public Main() {
 		f = new JFrame("Welcome Screen");
 		createServer = new JButton("Create Server");
 		joinServer = new JButton("Join Server");
@@ -58,12 +62,14 @@ public class Main implements NetworkListener {
 		serverInfo = new JTextArea("IP Address: Loading...\nPort Number: Loading...");
 		names = new ArrayList<String>();
 		
-		i = new JTextArea("Insane nines is a turn based game where 2 - 4 players play and draw"
-				+ "\ncards until they run out of cards. Clicking on cards selects and then"
-				+ "\nclicking on the played pile in the middle plays the card. Clicking on the"
-				+ "\nother card pile will draw a card. You can play cards that have matching"
-				+ "\nnumbers or suits with the last played card or you can play card 9 as a wild"
-				+ "\ncard and choose the next suit.");
+		i = new JTextArea("Insane Nines is a turn based card game using the standard 52 card deck."
+				+ "If there are 2 players, each player starts with 7 cards. Otherwise, each player"
+				+ "starts with 5 cards. There is initially a randomly chosen card from the draw"
+				+ "pile to start the game. The cards played will go into the played pile. A player"
+				+ "can either play a card with the same suit or rank, or the number nine no matter"
+				+ "what. If they can’t play a card, they will have to draw from the pile until"
+				+ "they can play a card. The draw pile will be refilled by the played pile when"
+				+ "empty. The first player to discard all their cards wins the game.");
 //		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
 //		f.setContentPane(new JLabel(new ImageIcon(img)));
 		
@@ -241,7 +247,12 @@ public class Main implements NetworkListener {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
+	/**
+	 * The main method to be run.
+	 * 
+	 * @param args none
+	 */
+	public static void main(String[] args) {
 		new Main();
 	}
 

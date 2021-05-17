@@ -1,9 +1,12 @@
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -116,6 +119,9 @@ public class Main implements NetworkListener {
 
 		createServer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				Object[] options = new Object[] {"Private", "Public"};
+				int choice = JOptionPane.showOptionDialog(f, "Which IP Address to use?", "Create Server", JOptionPane.YES_NO_OPTION,
+						JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 				if (s != null) {
 					s.close();
 				}
@@ -130,7 +136,14 @@ public class Main implements NetworkListener {
 					if (c.connect()) {
 						worker = new SwingWorker<String, Void>() {
 							protected String doInBackground() throws Exception {
-								return InetAddress.getLocalHost().getHostAddress();
+								if (choice == JOptionPane.YES_OPTION) {
+									return InetAddress.getLocalHost().getHostAddress();
+								} else {
+									try (BufferedReader br = new BufferedReader(new InputStreamReader(
+											new URL("http://bot.whatismyipaddress.com").openStream()))) {
+										return br.readLine().trim();
+									}
+								}
 							}
 							
 							protected void done() {
@@ -163,7 +176,7 @@ public class Main implements NetworkListener {
 						"IP Address: ", ip,
 						"Port Number: ", port
 				};
-				int choice = JOptionPane.showConfirmDialog(null, message, "Join Server", JOptionPane.OK_CANCEL_OPTION);
+				int choice = JOptionPane.showConfirmDialog(f, message, "Join Server", JOptionPane.OK_CANCEL_OPTION);
 				if (choice == JOptionPane.OK_OPTION) {
 					try {
 						c = new Client(ip.getText(), Integer.parseInt(port.getText()));
@@ -174,12 +187,12 @@ public class Main implements NetworkListener {
 							f.validate();
 						}
 						else {
-							JOptionPane.showMessageDialog(null, "Server does not exist.");
+							JOptionPane.showMessageDialog(f, "Server does not exist.");
 						}
 					} catch (NumberFormatException nfe) {
-						JOptionPane.showMessageDialog(null, "Server does not exist.");
+						JOptionPane.showMessageDialog(f, "Server does not exist.");
 					} catch (ConnectException ce) {
-						JOptionPane.showMessageDialog(null, "Server is full or does not exist.");
+						JOptionPane.showMessageDialog(f, "Server is full or does not exist.");
 					}
 				}
 			}
@@ -218,7 +231,7 @@ public class Main implements NetworkListener {
 				if (players >= 2) {
 					c.sendMessage(DataObject.START, new Object[] {names});
 				} else {
-					JOptionPane.showMessageDialog(null, "Must have at least 2 players to start.");
+					JOptionPane.showMessageDialog(f, "Must have at least 2 players to start.");
 				}
 			}
 			

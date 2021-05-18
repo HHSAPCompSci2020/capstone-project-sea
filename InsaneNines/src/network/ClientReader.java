@@ -16,6 +16,7 @@ import javax.swing.SwingUtilities;
 public class ClientReader implements Runnable {
 	private Socket socket;
 	private ObjectInputStream in;
+	private boolean isHost;
 	private boolean looping;
 	private ArrayList<NetworkListener> listeners;
 	
@@ -24,8 +25,9 @@ public class ClientReader implements Runnable {
 	 * 
 	 * @param socket the client's socket
 	 */
-	public ClientReader(Socket socket) {
+	public ClientReader(Socket socket, boolean isHost) {
 		this.socket = socket;
+		this.isHost = isHost;
 	}
 	
 	/**
@@ -51,11 +53,15 @@ public class ClientReader implements Runnable {
 	@Override
 	public void run() {
 		looping = true;
+		boolean disconnected = false;
 		while (looping) {
 			try {
 				Object input = in.readObject();
 				if (input instanceof DataObject) {
 					DataObject data = (DataObject) input;
+					if (data.messageType.equals(DataObject.DISCONNECT) && data.message.length == 0) {
+						disconnected = true;
+					}
 					for (NetworkListener listener : listeners) {
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
@@ -66,7 +72,20 @@ public class ClientReader implements Runnable {
 					}
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				stop();
+				if (!disconnected && !isHost) {
+					DataObject data = new DataObject();
+					data.messageType = DataObject.DISCONNECT;
+					data.message = new Object[] {};
+					for (NetworkListener listener : listeners) {
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								listener.messageReceived(data);
+							}
+						});
+					}
+				}
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}

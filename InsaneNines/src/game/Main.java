@@ -1,13 +1,12 @@
+package game;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.InetAddress;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JButton;
@@ -17,11 +16,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
-import game.Card;
-import game.Deck;
-import game.GamePanel;
 import network.Client;
 import network.DataObject;
 import network.NetworkListener;
@@ -38,8 +35,8 @@ public class Main implements NetworkListener {
 	private JFrame f;
 	private GamePanel game;
 	private JPanel menu, instructions, waitRoom;
-	private JButton createServer, joinServer, viewInstructions, back, start;
-	private JLabel l, playerCount;
+	private JButton createServer, joinServer, viewInstructions, back, back2, start, changeName;
+	private JLabel title, l, playerCount;
 	private JTextArea serverInfo, i;
 	private Server s;
 	private Client c;
@@ -52,37 +49,45 @@ public class Main implements NetworkListener {
 	 */
 	public Main() {
 		f = new JFrame("Welcome Screen");
+		title = new JLabel("Insane Nines");
 		createServer = new JButton("Create Server");
 		joinServer = new JButton("Join Server");
 		viewInstructions = new JButton("Instructions");
 		back = new JButton("Back");
+		back2 = new JButton("Back");
 		start = new JButton("Start");
+		changeName = new JButton("Change Name");
 		menu = new JPanel();
 		instructions = new JPanel();
 		waitRoom = new JPanel();
 		l = new JLabel("Waiting for players... ");
 		playerCount = new JLabel("1/4");
 		serverInfo = new JTextArea("IP Address: Loading...\nPort Number: Loading...");
-		names = new ArrayList<String>();
+		name = null;
+		names = null;
 		
 		i = new JTextArea("Insane Nines is a turn based card game using the standard 52 card deck."
-				+ "If there are 2 players, each player starts with 7 cards. Otherwise, each player"
-				+ "starts with 5 cards. There is initially a randomly chosen card from the draw"
-				+ "pile to start the game. The cards played will go into the played pile. A player"
-				+ "can either play a card with the same suit or rank, or the number nine no matter"
-				+ "what. If they can’t play a card, they will have to draw from the pile until"
-				+ "they can play a card. The draw pile will be refilled by the played pile when"
-				+ "empty. The first player to discard all their cards wins the game.");
+				+ " If there are 2 players, each player starts with 7 cards. Otherwise, each player"
+				+ " starts with 5 cards. There is initially a randomly chosen card from the draw"
+				+ " pile to start the game. The cards played will go into the played pile. A player"
+				+ " can either play a card with the same suit or rank, or the number nine no matter"
+				+ " what. If they can’t play a card, they will have to draw from the pile until"
+				+ " they can play a card. The draw pile will be refilled by the played pile when"
+				+ " empty. The first player to discard all their cards wins the game.");
 //		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
 //		f.setContentPane(new JLabel(new ImageIcon(img)));
 		
 //		f.setLayout(null);
 		
 		menu.setLayout(null);
-		createServer.setBounds(40, 80, 400, 40);
-		joinServer.setBounds(40, 140, 400, 40);
-		viewInstructions.setBounds(40, 200, 400, 40);
+		title.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 30));
+		title.setHorizontalAlignment(SwingConstants.CENTER);
+		title.setBounds(50, 25, 400, 50);
+		createServer.setBounds(50, 100, 400, 50);
+		joinServer.setBounds(50, 175, 400, 50);
+		viewInstructions.setBounds(50, 250, 400, 50);
 		
+		menu.add(title);
 		menu.add(createServer);
 		menu.add(joinServer);
 		menu.add(viewInstructions);
@@ -92,36 +97,38 @@ public class Main implements NetworkListener {
 		
 		
 		waitRoom.setLayout(null);
-		back.setBounds(350, 300, 100, 40);
-		start.setBounds(50, 300, 100, 40);
-		l.setBounds(40, 60, 400, 40);
+		back.setBounds(350, 300, 100, 50);
+		back2.setBounds(350, 300, 100, 50);
+		start.setBounds(50, 300, 100, 50);
+		changeName.setBounds(350, 200, 100, 50);
+		l.setBounds(50, 100, 400, 50);
 		serverInfo.setEditable(false);
-		serverInfo.setBounds(40, 20, 400, 40);
+		serverInfo.setBounds(50, 50, 400, 50);
 		//update player label when players join
-		playerCount.setBounds(150, 100, 100, 50);
+		playerCount.setBounds(245, 300, 100, 50);
 		waitRoom.add(playerCount);
 		waitRoom.add(back);
 		waitRoom.add(l);
 		waitRoom.add(serverInfo);
+		waitRoom.add(changeName);
 		waitRoom.setBackground(Color.WHITE);
 			
 		instructions.setLayout(null);
-		i.setBounds(40, 100, 400, 200);
+		i.setLineWrap(true);
+		i.setWrapStyleWord(true);
+		i.setBounds(40, 40, 400, 200);
 		instructions.add(i);
-		instructions.add(back);
+		instructions.add(back2);
 		instructions.setBackground(Color.WHITE);
 
 		f.setResizable(false);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
-		f.setSize(500,400);
+		f.setSize(500, 400);
 
 
 		createServer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Object[] options = new Object[] {"Private", "Public"};
-				int choice = JOptionPane.showOptionDialog(f, "Which IP Address to use?", "Create Server", JOptionPane.YES_NO_OPTION,
-						JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 				if (s != null) {
 					s.close();
 				}
@@ -130,20 +137,13 @@ public class Main implements NetworkListener {
 				if (c != null) {
 					c.disconnect();
 				}
-				c = new Client(InetAddress.getLoopbackAddress().getHostAddress(), s.getPort());
+				c = new Client(InetAddress.getLoopbackAddress().getHostAddress(), s.getPort(), true);
 				c.addListener(Main.this);
 				try {
 					if (c.connect()) {
 						worker = new SwingWorker<String, Void>() {
 							protected String doInBackground() throws Exception {
-								if (choice == JOptionPane.YES_OPTION) {
-									return InetAddress.getLocalHost().getHostAddress();
-								} else {
-									try (BufferedReader br = new BufferedReader(new InputStreamReader(
-											new URL("http://bot.whatismyipaddress.com").openStream()))) {
-										return br.readLine().trim();
-									}
-								}
+								return InetAddress.getLocalHost().getHostAddress();
 							}
 							
 							protected void done() {
@@ -151,7 +151,7 @@ public class Main implements NetworkListener {
 									c.sendMessage(DataObject.INFORMATION, get());
 								} catch (InterruptedException e) {
 								} catch (ExecutionException e) {
-									e.printStackTrace();
+								} catch (CancellationException e) {
 								}
 							}
 							
@@ -159,8 +159,8 @@ public class Main implements NetworkListener {
 						worker.execute();
 						waitRoom.add(start);
 						f.setContentPane(waitRoom);
-						f.invalidate();
-						f.validate();
+						f.revalidate();
+						f.repaint();
 					}
 				} catch (ConnectException e1) {
 					e1.printStackTrace();
@@ -182,17 +182,20 @@ public class Main implements NetworkListener {
 						c = new Client(ip.getText(), Integer.parseInt(port.getText()));
 						c.addListener(Main.this);
 						if (c.connect()) {
+							if (start.getParent() == waitRoom) {
+								waitRoom.remove(start);
+							}
 							f.setContentPane(waitRoom);
-							f.invalidate();
-							f.validate();
+							f.revalidate();
+							f.repaint();
 						}
 						else {
-							JOptionPane.showMessageDialog(f, "Server does not exist.");
+							JOptionPane.showMessageDialog(f, "Server does not exist.", "Join Server", JOptionPane.PLAIN_MESSAGE);
 						}
 					} catch (NumberFormatException nfe) {
-						JOptionPane.showMessageDialog(f, "Server does not exist.");
+						JOptionPane.showMessageDialog(f, "Server does not exist.", "Join Server", JOptionPane.PLAIN_MESSAGE);
 					} catch (ConnectException ce) {
-						JOptionPane.showMessageDialog(f, "Server is full or does not exist.");
+						JOptionPane.showMessageDialog(f, "Server is full or does not exist.", "Join Server", JOptionPane.PLAIN_MESSAGE);
 					}
 				}
 			}
@@ -201,27 +204,28 @@ public class Main implements NetworkListener {
 		viewInstructions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				f.setContentPane(instructions);
-				f.invalidate();
-				f.validate();
+				f.revalidate();
+				f.repaint();
 			}
 		});
 
 		back.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (s != null) {
-					s.close();
 					s = null;
 				}
 				if (c != null) {
 					c.disconnect();
 					c = null;
 				}
+				name = null;
+				names = null;
 				if (worker != null) {
 					worker.cancel(true);
 				}
 				f.setContentPane(menu);
-				f.invalidate();
-				f.validate();
+				f.revalidate();
+				f.repaint();
 			}
 		});
 
@@ -231,10 +235,40 @@ public class Main implements NetworkListener {
 				if (players >= 2) {
 					c.sendMessage(DataObject.START, new Object[] {names});
 				} else {
-					JOptionPane.showMessageDialog(f, "Must have at least 2 players to start.");
+					JOptionPane.showMessageDialog(f, "Must have at least 2 players to start.", "Start Game", JOptionPane.PLAIN_MESSAGE);
 				}
 			}
 			
+		});
+		
+		changeName.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String newName = (String) JOptionPane.showInputDialog(f, "Enter new name:", "Name Change", JOptionPane.PLAIN_MESSAGE,
+						null, null, name);
+				if (newName == null) {
+					return;
+				}
+				newName = newName.trim();
+				if (newName.equals("")) {
+					JOptionPane.showMessageDialog(f, "Name cannot be blank.", "Name Change", JOptionPane.PLAIN_MESSAGE);
+				} else if (!newName.equals(name)) {
+					for (String name : names) {
+						if (newName.equals(name)) {
+							JOptionPane.showMessageDialog(f, "Name is already in use.", "Name Change", JOptionPane.PLAIN_MESSAGE);
+							return;
+						}
+					}
+					c.sendMessage(DataObject.NAME_CHANGE, new Object[] {name, newName});
+				}
+			}
+		});
+		
+		back2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				f.setContentPane(menu);
+				f.revalidate();
+				f.repaint();
+			}
 		});
 
 	}
@@ -245,18 +279,53 @@ public class Main implements NetworkListener {
 			if (name == null) {
 				name = (String) data.message[0];
 			}
-			names.add((String) data.message[0]);
-			playerCount.setText((int) data.message[1] + "/4");
+			if (names == null) {
+				names = (ArrayList<String>) data.message[1];
+			} else {
+				names.add((String) data.message[0]);
+			}
+			playerCount.setText(names.size() + "/4");
+			if (names.size() >= 2) {
+				l.setText("Ready to start!");
+			}
 			if (data.message[2] != null) {
 				serverInfo.setText("IP Address: " + data.message[2] + "\nPort Number: " + data.message[3]);
 			}
 		} else if (data.messageType.equals(DataObject.INFORMATION)) {
 			serverInfo.setText("IP Address: " + data.message[0] + "\nPort Number: " + data.message[1]);
 		} else if (data.messageType.equals(DataObject.START)) {
-			game = new GamePanel(c, name, (ArrayList<String>) data.message[0], (Deck) data.message[1],
-					(int) data.message[2], (Card) data.message[3]);
+			game = new GamePanel(c, name, names, (Deck) data.message[0],
+					(int) data.message[1], (Card) data.message[2], this);
 			c.addListener(game);
 			f.setVisible(false);
+		} else if (data.messageType.equals(DataObject.NAME_CHANGE)) {
+			if (name.equals((String) data.message[0])) {
+				name = (String) data.message[1];
+			}
+			names.set(names.indexOf((String) data.message[0]), (String) data.message[1]);
+		} else if (data.messageType.equals(DataObject.DISCONNECT) && game == null) {
+			if (data.message.length == 2) {
+				names.remove((String) data.message[0]);
+				playerCount.setText((int) data.message[1] + "/4");
+			} else {
+				back.getActionListeners()[0].actionPerformed(new ActionEvent(back, ActionEvent.ACTION_PERFORMED, ""));
+				JOptionPane.showMessageDialog(f, "Host disconnected. The server has been closed.", "Disconnection",
+						JOptionPane.PLAIN_MESSAGE);
+			}
+		}
+	}
+	
+	/**
+	 * Navigates back to the main menu from a game.
+	 * 
+	 * @param message optional message to display
+	 */
+	public void backToMenu(String message) {
+		back.getActionListeners()[0].actionPerformed(new ActionEvent(back, ActionEvent.ACTION_PERFORMED, ""));
+		game = null;
+		f.setVisible(true);
+		if (message != null) {
+			JOptionPane.showMessageDialog(f, message);
 		}
 	}
 

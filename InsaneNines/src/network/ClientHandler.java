@@ -104,10 +104,14 @@ public class ClientHandler implements Runnable {
 							out.writeObject(next);
 							out.flush();
 						} else if(data.messageType.equals(DataObject.HANDSHAKE)) {
+							ArrayList<String> names = new ArrayList<String>();
+							for (ClientHandler ch : server.getHandlers()) {
+								names.add(ch.name);
+							}
 							for (ClientHandler ch : server.getHandlers()) {
 								DataObject next = new DataObject();
 								next.messageType = DataObject.HANDSHAKE;
-								next.message = new Object[] {name, server.getHandlers().size(), server.getHost(), server.getPort()};
+								next.message = new Object[] {name, names, server.getHost(), server.getPort()};
 								ch.out.writeObject(next);
 								ch.out.flush();
 							}
@@ -124,17 +128,7 @@ public class ClientHandler implements Runnable {
 								}
 								DataObject next = new DataObject();
 								next.messageType = DataObject.START;
-								next.message = new Object[] {data.message[0], deck, server.getTurn().get(), server.getPlayed().getTop()};
-								ch.out.writeObject(next);
-								ch.out.flush();
-							}
-						} else if (data.messageType.equals(DataObject.DISCONNECT)) {
-							server.getHandlers().remove(this);
-							looping = false;
-							for (ClientHandler ch : server.getHandlers()) {
-								DataObject next = new DataObject();
-								next.messageType = DataObject.DISCONNECT;
-								next.message = new Object[] {name};
+								next.message = new Object[] {deck, server.getTurn().get(), server.getPlayed().getTop()};
 								ch.out.writeObject(next);
 								ch.out.flush();
 							}
@@ -147,11 +141,51 @@ public class ClientHandler implements Runnable {
 								ch.out.writeObject(next);
 								ch.out.flush();
 							}
+						} else if (data.messageType.equals(DataObject.MESSAGE)) {
+							for (ClientHandler ch : server.getHandlers()) {
+								ch.out.writeObject(data);
+								ch.out.flush();
+							}
+						} else if (data.messageType.equals(DataObject.NAME_CHANGE)) {
+							name = (String) data.message[1];
+							for (ClientHandler ch : server.getHandlers()) {
+								DataObject next = new DataObject();
+								next.messageType = DataObject.NAME_CHANGE;
+								next.message = new Object[] {data.message[0], data.message[1]};
+								ch.out.writeObject(next);
+								ch.out.flush();
+							}
 						}
 					}
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				stop();
+				try {
+					synchronized (server) {
+						if (this != server.getHandlers().get(0)) {
+							server.getHandlers().remove(this);
+							for (ClientHandler ch : server.getHandlers()) {
+								DataObject next = new DataObject();
+								next.messageType = DataObject.DISCONNECT;
+								next.message = new Object[] {name, server.getHandlers().size()};
+								ch.out.writeObject(next);
+								ch.out.flush();
+							}
+						} else {
+							server.getHandlers().remove(this);
+							for (ClientHandler ch : server.getHandlers()) {
+								DataObject next = new DataObject();
+								next.messageType = DataObject.DISCONNECT;
+								next.message = new Object[] {};
+								ch.out.writeObject(next);
+								ch.out.flush();
+							}
+							server.close();
+						}
+					}
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}

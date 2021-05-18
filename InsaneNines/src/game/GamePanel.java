@@ -6,6 +6,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -13,10 +15,14 @@ import java.util.ArrayList;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import network.Client;
 import network.DataObject;
@@ -31,15 +37,19 @@ import network.NetworkListener;
 public class GamePanel extends JFrame implements NetworkListener {
 	private static final long serialVersionUID = 9043093457846944651L;
 	private static final Color BACKGROUND_COLOR = Color.GREEN;
-	private JPanel middle, cards, area1, area2, area3, area4, area5;
-	private JScrollPane pane;
+	private JPanel game, middle, cards, area1, area2, area3, area4, area5, largeArea2, largeArea4, chatArea, sendArea;
+	private JTextArea messages;
+	private JTextField message;
+	private JScrollPane pane, chat;
 	private JLabel playerTurn, name1, name2, name3, name4, num1, num2, num3, num4, draw, topLabel;
+	private JButton send;
 	private int pos;
 	private int turn;
 	private boolean myTurn;
 	private Card top;
 	private ArrayList<Player> players;
 	private Client client;
+	private Main main;
 
 	/**
 	 * Creates the game panel.
@@ -50,11 +60,13 @@ public class GamePanel extends JFrame implements NetworkListener {
 	 * @param deck the deck of this panel's player
 	 * @param turn the starting player's position
 	 * @param top the starting card
+	 * @param Main the main menu
 	 */
-	public GamePanel(Client client, String name, ArrayList<String> names, Deck deck, int turn, Card top) {
+	public GamePanel(Client client, String name, ArrayList<String> names, Deck deck, int turn, Card top, Main main) {
 		myTurn = false;
 		this.turn = turn;
 		this.top = top;
+		this.main = main;
 		players = new ArrayList<Player>();
 		for (int i = 0; i < names.size(); i++) {
 			if (names.get(i).equals(name)) {
@@ -70,13 +82,16 @@ public class GamePanel extends JFrame implements NetworkListener {
 			myTurn = true;
 		}
 		playerTurn.setText(players.get(turn).getName() + "'s Turn");
-		playerTurn.setFont(new Font("Serif", Font.PLAIN, 30));
+		playerTurn.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 30));
+		playerTurn.setHorizontalAlignment(SwingConstants.CENTER);
+		game = new JPanel(new BorderLayout());
 		middle = new JPanel(new BorderLayout());
 		cards = new JPanel();
-		cards.setPreferredSize(new Dimension(600, 1000));
 		pane = new JScrollPane(cards);
 		cards.setAutoscrolls(true);
-		pane.setPreferredSize(new Dimension(600, 300));
+		cards.setPreferredSize(new Dimension(600, 950));
+		pane.setPreferredSize(new Dimension(600, 150));
+		game.setPreferredSize(new Dimension(600, 400));
 		pane.getVerticalScrollBar().setUnitIncrement(10);
 		for (Card card : deck.getDeck()) {
 			JLabel cardLabel = new JLabel(card.getImage());
@@ -94,6 +109,10 @@ public class GamePanel extends JFrame implements NetworkListener {
 			});
 			cards.add(cardLabel);
 		}
+		largeArea2 = new JPanel();
+		largeArea2.setLayout(new BoxLayout(largeArea2, BoxLayout.X_AXIS));
+		largeArea4 = new JPanel();
+		largeArea4.setLayout(new BoxLayout(largeArea4, BoxLayout.X_AXIS));
 		
 		area1 = new JPanel();
 		area1.setLayout(new BoxLayout(area1, BoxLayout.Y_AXIS));
@@ -167,21 +186,60 @@ public class GamePanel extends JFrame implements NetworkListener {
 		area5.add(draw);
 		area5.add(topLabel);
 		area5.add(Box.createHorizontalGlue());
+
+		largeArea2.add(area2);
+		largeArea2.add(Box.createRigidArea(new Dimension(100, 0)));
+		largeArea4.add(Box.createRigidArea(new Dimension(100, 0)));
+		largeArea4.add(area4);
 		
 		middle.add(area1, BorderLayout.NORTH);
-		middle.add(area2, BorderLayout.EAST);
+		middle.add(largeArea2, BorderLayout.EAST);
 		middle.add(area3, BorderLayout.SOUTH);
-		middle.add(area4, BorderLayout.WEST);
+		middle.add(largeArea4, BorderLayout.WEST);
 		middle.add(area5, BorderLayout.CENTER);
 		
-		add(playerTurn, BorderLayout.NORTH);
-		add(middle, BorderLayout.CENTER);
-		add(pane, BorderLayout.SOUTH);
+		game.add(playerTurn, BorderLayout.NORTH);
+		game.add(middle, BorderLayout.CENTER);
+		game.add(pane, BorderLayout.SOUTH);
+		
+		messages = new JTextArea();
+		messages.setEditable(false);
+		chat = new JScrollPane(messages);
+		chat.setAutoscrolls(true);
+		message = new JTextField();
+		message.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!message.getText().trim().equals("")) {
+					client.sendMessage(DataObject.MESSAGE, players.get(pos).getName(), message.getText().trim());
+					message.setText("");
+				}
+			}
+		});
+		send = new JButton("Send");
+		send.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!message.getText().trim().equals("")) {
+					client.sendMessage(DataObject.MESSAGE, players.get(pos).getName(), message.getText().trim());
+					message.setText("");
+				}
+			}
+			
+		});
+		sendArea = new JPanel(new BorderLayout());
+		sendArea.add(message, BorderLayout.CENTER);
+		sendArea.add(send, BorderLayout.EAST);
+		chatArea = new JPanel(new BorderLayout());
+		chatArea.setPreferredSize(new Dimension(300, 400));
+		chatArea.add(chat, BorderLayout.CENTER);
+		chatArea.add(sendArea, BorderLayout.SOUTH);
+		
+		add(game, BorderLayout.CENTER);
+		add(chatArea, BorderLayout.EAST);
 		
 		setBackground(BACKGROUND_COLOR);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
-		setSize(500, 400);
+		setSize(900, 400);
 		pack();
 	}
 
@@ -253,6 +311,19 @@ public class GamePanel extends JFrame implements NetworkListener {
 			topLabel.setIcon(((Card) data.message[1]).getImage());
 			revalidate();
 			repaint();
+		} else if(data.messageType.equals(DataObject.MESSAGE)) {
+			String name = (String) data.message[0];
+			if (!messages.getText().equals("")) {
+				messages.append("\n");
+			}
+			if (name.equals(players.get(pos).getName())) {
+				messages.append(name + " (you): " + (String) data.message[1]);
+			} else {
+				messages.append(name + ": " + (String) data.message[1]);
+			}
+		} else if (data.messageType.equals(DataObject.DISCONNECT)) {
+			setVisible(false);
+			main.backToMenu("A player disconnected. The server has been closed.");
 		}
 	}
 }

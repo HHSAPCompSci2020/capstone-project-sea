@@ -79,7 +79,7 @@ public class Server implements Runnable {
 				handlers.add(handler);
 				handler.start();
 			} catch (IOException e) {
-				e.printStackTrace();
+				break;
 			}
 		}
 	}
@@ -156,10 +156,5 @@ public class Server implements Runnable {
 	 */
 	public String getHost() {
 		return host;
-	}
-	
-	@Override
-	protected void finalize() {
-		close();
 	}
 }

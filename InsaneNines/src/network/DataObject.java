@@ -21,6 +21,16 @@ public class DataObject implements Serializable {
 	public static final String INFORMATION = "INFORMATION";
 	
 	/**
+	 * Sent by the client and server when a client changes their name.
+	 */
+	public static final String NAME_CHANGE = "NAME_CHANGE";
+	
+	/**
+	 * Sent by the client and server when a chat message is sent.
+	 */
+	public static final String MESSAGE = "MESSAGE";
+	
+	/**
 	 * Sent by the client and server when the game starts.
 	 */
 	public static final String START = "START";

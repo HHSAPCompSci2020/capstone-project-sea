@@ -100,7 +100,7 @@ public class Main implements NetworkListener {
 		back.setBounds(350, 300, 100, 50);
 		back2.setBounds(350, 300, 100, 50);
 		start.setBounds(50, 300, 100, 50);
-		changeName.setBounds(350, 200, 100, 50);
+		changeName.setBounds(325, 200, 125, 50);
 		l.setBounds(50, 100, 400, 50);
 		serverInfo.setEditable(false);
 		serverInfo.setBounds(50, 50, 400, 50);

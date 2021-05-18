@@ -240,6 +240,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 		setSize(900, 400);
+		setResizable(false);
 		pack();
 	}
 

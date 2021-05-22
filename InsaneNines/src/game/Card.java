@@ -40,6 +40,20 @@ public class Card implements Serializable, Comparable<Card> {
 	}
 	
 	/**
+	 * @return true if this card is a skip (if this card's rank is "QUEEN") or false otherwise
+	 */
+	public boolean isSkip() {
+		return rank.equals("QUEEN");
+	}
+	
+	/**
+	 * @return true if this card is a reverse (if this card's rank is "ACE") or false otherwise
+	 */
+	public boolean isReverse() {
+		return rank.equals("ACE");
+	}
+	
+	/**
 	 * @return this card's rank
 	 */
 	public String getRank() {

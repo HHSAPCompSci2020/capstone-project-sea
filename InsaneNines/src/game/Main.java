@@ -150,7 +150,9 @@ public class Main implements NetworkListener {
 							
 							protected void done() {
 								try {
-									c.sendMessage(DataObject.INFORMATION, get());
+									if (c != null) {
+										c.sendMessage(DataObject.INFORMATION, get());
+									}
 								} catch (InterruptedException e) {
 								} catch (ExecutionException e) {
 									e.getCause().printStackTrace();
@@ -239,6 +241,14 @@ public class Main implements NetworkListener {
 
 		back.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (worker != null) {
+					worker.cancel(true);
+					worker = null;
+				}
+				if (worker2 != null) {
+					worker2.cancel(true);
+					worker2 = null;
+				}
 				if (s != null) {
 					s = null;
 				}
@@ -248,14 +258,6 @@ public class Main implements NetworkListener {
 				}
 				name = null;
 				names = null;
-				if (worker != null) {
-					worker.cancel(true);
-					worker = null;
-				}
-				if (worker2 != null) {
-					worker2.cancel(true);
-					worker2 = null;
-				}
 				serverInfo.setText("IP Address: Loading...\nPort Number: Loading...");
 				l.setText("Waiting for players...");
 				playerCount.setText("1/4");
@@ -324,7 +326,9 @@ public class Main implements NetworkListener {
 				names.add((String) data.message[0]);
 			}
 			playerCount.setText(names.size() + "/4");
-			if (names.size() >= 2) {
+			if (names.size() == 1) {
+				l.setText("Waiting for players...");
+			} else {
 				l.setText("Ready to start!");
 			}
 			if (data.message[2] != null) {
@@ -344,8 +348,10 @@ public class Main implements NetworkListener {
 			names.set(names.indexOf((String) data.message[0]), (String) data.message[1]);
 		} else if (data.messageType.equals(DataObject.DISCONNECT) && game == null) {
 			if (data.message.length == 2) {
-				names.remove((String) data.message[0]);
-				playerCount.setText((int) data.message[1] + "/4");
+				if (names != null) {
+					names.remove((String) data.message[0]);
+					playerCount.setText((int) data.message[1] + "/4");
+				}
 			} else {
 				back.getActionListeners()[0].actionPerformed(new ActionEvent(back, ActionEvent.ACTION_PERFORMED, ""));
 				JOptionPane.showMessageDialog(f, "Host disconnected. The server has been closed.", "Disconnection",

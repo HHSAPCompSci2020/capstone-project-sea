@@ -76,8 +76,15 @@ public class ClientHandler implements Runnable {
 								}
 							} else {
 								AtomicInteger turn = server.getTurn();
+								if (card.isSkip()) {
+									turn.set((turn.get()+server.getDirection().get()+server.getHandlers().size())
+											%server.getHandlers().size());
+								} else if (card.isReverse()) {
+									AtomicInteger direction = server.getDirection();
+									direction.set(-direction.get());
+								}
 								turn.set((turn.get()+server.getDirection().get()+server.getHandlers().size())
-										%server.getHandlers().size());
+											%server.getHandlers().size());
 								for (ClientHandler ch : server.getHandlers()) {
 									DataObject next = new DataObject();
 									next.messageType = DataObject.TURN;
@@ -190,16 +197,7 @@ public class ClientHandler implements Runnable {
 				stop();
 				try {
 					synchronized (server) {
-						if (this != server.getHandlers().get(0)) {
-							server.getHandlers().remove(this);
-							for (ClientHandler ch : server.getHandlers()) {
-								DataObject next = new DataObject();
-								next.messageType = DataObject.DISCONNECT;
-								next.message = new Object[] {name, server.getHandlers().size()};
-								ch.out.writeObject(next);
-								ch.out.flush();
-							}
-						} else {
+						if (this == server.getHandlers().get(0) && !server.getStarted().get()) {
 							server.getHandlers().remove(this);
 							for (ClientHandler ch : server.getHandlers()) {
 								DataObject next = new DataObject();
@@ -209,6 +207,15 @@ public class ClientHandler implements Runnable {
 								ch.out.flush();
 							}
 							server.close();
+						} else {
+							server.getHandlers().remove(this);
+							for (ClientHandler ch : server.getHandlers()) {
+								DataObject next = new DataObject();
+								next.messageType = DataObject.DISCONNECT;
+								next.message = new Object[] {name, server.getHandlers().size()};
+								ch.out.writeObject(next);
+								ch.out.flush();
+							}
 						}
 					}
 				} catch (IOException e1) {

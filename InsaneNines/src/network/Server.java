@@ -48,7 +48,7 @@ public class Server implements Runnable {
 		}
 		draw.shuffle();
 		played.addCard(draw.removeTop());
-		while (played.getTop().isNine()) {
+		while (played.getTop().isNine() || played.getTop().isSkip() || played.getTop().isReverse()) {
 			draw.getDeck().add(0, played.removeTop());
 			played.addCard(draw.removeTop());
 		}
@@ -74,12 +74,14 @@ public class Server implements Runnable {
 
 	@Override
 	public void run() {
+		int player = 1;
 		while (handlers.size() < 4 && !started.get()) {
 			try {
 				Socket client = server.accept();
-				ClientHandler handler = new ClientHandler(client, "Player " + (handlers.size() + 1), this);
+				ClientHandler handler = new ClientHandler(client, "Player " + player, this);
 				handlers.add(handler);
 				handler.start();
+				player++;
 			} catch (IOException e) {
 				break;
 			}

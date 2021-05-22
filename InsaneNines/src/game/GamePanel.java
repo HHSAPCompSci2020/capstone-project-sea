@@ -38,7 +38,7 @@ import network.NetworkListener;
 public class GamePanel extends JFrame implements NetworkListener {
 	private static final long serialVersionUID = 9043093457846944651L;
 	private static final Color BACKGROUND_COLOR = Color.GREEN;
-	private JPanel game, middle, cards, area1, area2, area3, area4, area5, largeArea2, largeArea4, chatArea, sendArea;
+	private JPanel game, middle, cards, area1, area2, area3, area4, area5, largeArea2, largeArea4, chatArea, sendArea, bottom;
 	private JTextArea messages;
 	private JTextField message;
 	private JScrollPane pane, chat;
@@ -122,13 +122,18 @@ public class GamePanel extends JFrame implements NetworkListener {
 			});
 			cards.add(cardLabel);
 		}
+		bottom = new JPanel();
+		bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
 		leave = new JButton("Leave Game");
+		leave.setPreferredSize(new Dimension(100, 20));
 		leave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
 				main.backToMenu(null);
 			}
 		});
+		bottom.add(leave);
+		bottom.add(Box.createHorizontalGlue());
 		
 		largeArea2 = new JPanel();
 		largeArea2.setLayout(new BoxLayout(largeArea2, BoxLayout.X_AXIS));
@@ -264,7 +269,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 		
 		add(game, BorderLayout.CENTER);
 		add(chatArea, BorderLayout.EAST);
-		add(leave, BorderLayout.SOUTH);
+		add(bottom, BorderLayout.SOUTH);
 		
 		setBackground(BACKGROUND_COLOR);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

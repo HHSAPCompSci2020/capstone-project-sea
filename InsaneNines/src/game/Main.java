@@ -68,14 +68,16 @@ public class Main implements NetworkListener {
 		name = null;
 		names = null;
 		
-		i = new JTextArea("Insane Nines is a turn based card game using the standard 52 card deck."
-				+ " If there are 2 players, each player starts with 7 cards. Otherwise, each player"
-				+ " starts with 5 cards. There is initially a randomly chosen card from the draw"
-				+ " pile to start the game. The cards played will go into the played pile. A player"
-				+ " can either play a card with the same suit or rank, or the number nine no matter"
-				+ " what. If they can’t play a card, they will have to draw from the pile until"
-				+ " they can play a card. The draw pile will be refilled by the played pile when"
-				+ " empty. The first player to discard all their cards wins the game.");
+		i = new JTextArea("Rules:\n\n"
+				+ "When it is your turn, you can either play or draw.\n\n"
+				+ "Play a card by clicking on the card in your deck. "
+				+ "This card must be of the same rank or suit as the top card, "
+				+ "or the card 9, which allows you to declare the suit of the next player's card. "
+				+ "Queens skip the next player's turn and aces reverse the direction of play.\n\n"
+				+ "Draw a card by clicking on the draw deck next to the top card.\n"
+				+ "If there are no more cards available to draw and you cannot play a card, "
+				+ "your turn is skipped.\n\n"
+				+ "The first player to discard all their cards wins.");
 //		BufferedImage img = ImageIO.read(new File("Images/welcomebackground.png"));
 //		f.setContentPane(new JLabel(new ImageIcon(img)));
 		
@@ -118,7 +120,7 @@ public class Main implements NetworkListener {
 		instructions.setLayout(null);
 		i.setLineWrap(true);
 		i.setWrapStyleWord(true);
-		i.setBounds(40, 40, 400, 200);
+		i.setBounds(50, 50, 400, 250);
 		instructions.add(i);
 		instructions.add(back2);
 		instructions.setBackground(Color.WHITE);

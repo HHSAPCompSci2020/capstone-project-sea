@@ -18,21 +18,18 @@ import game.Deck;
 public class Server implements Runnable {
 	private String host;
 	private int port;
-	private int minClients;
-	private int maxClients;
 	private ServerSocket server;
 	private List<ClientHandler> handlers;
 	private Deck draw;
 	private Deck played;
 	private AtomicInteger turn;
+	private AtomicInteger direction;
 	private AtomicBoolean started;
 	
 	/**
 	 * Creates a local server with a random port.
 	 */
 	public Server() {
-		minClients = 2;
-		maxClients = 4;
 		try {
 			server = new ServerSocket(0);
 			port = server.getLocalPort();
@@ -51,7 +48,12 @@ public class Server implements Runnable {
 		}
 		draw.shuffle();
 		played.addCard(draw.removeTop());
+		while (played.getTop().isNine()) {
+			draw.getDeck().add(0, played.removeTop());
+			played.addCard(draw.removeTop());
+		}
 		turn = new AtomicInteger();
+		direction = new AtomicInteger(1);
 		started = new AtomicBoolean();
 		new Thread(new Runnable() {
 			public void run() {
@@ -72,7 +74,7 @@ public class Server implements Runnable {
 
 	@Override
 	public void run() {
-		while (handlers.size() < maxClients && !started.get()) {
+		while (handlers.size() < 4 && !started.get()) {
 			try {
 				Socket client = server.accept();
 				ClientHandler handler = new ClientHandler(client, "Player " + (handlers.size() + 1), this);
@@ -124,17 +126,17 @@ public class Server implements Runnable {
 	}
 	
 	/**
+	 * @return the direction of play, 1 if clockwise, -1 if counterclockwise
+	 */
+	public AtomicInteger getDirection() {
+		return direction;
+	}
+	
+	/**
 	 * @return true if this game has already started or false otherwise
 	 */
 	public AtomicBoolean getStarted() {
 		return started;
-	}
-	
-	/**
-	 * @return the minimum amount of players to start a game
-	 */
-	public int getMinClients() {
-		return minClients;
 	}
 	
 	/**

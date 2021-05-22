@@ -91,4 +91,18 @@ public class Player {
 		return hand.getDeck().size();
 	}
 	
+	/**
+	 * @param top the current top card
+	 * @param suit the suit chosen if the current top card's rank is "NINE"
+	 * @return true if any card in this player's deck can be played on top of the current top card or false otherwise
+	 */
+	public boolean canPlay(Card top, String suit) {
+		for (Card card : hand.getDeck()) {
+			if (card.canPlay(top, suit)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 }

@@ -1,8 +1,9 @@
 package network;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 /**
@@ -15,7 +16,6 @@ public class Client {
 	private Socket socket;
 	private String host;
 	private int port;
-	private boolean isHost;
 	private ClientReader reader;
 	private ClientWriter writer;
 	private ArrayList<NetworkListener> listeners;
@@ -29,20 +29,7 @@ public class Client {
 	public Client(String host, int port) {
 		this.host = host;
 		this.port = port;
-		isHost = false;
 		listeners = new ArrayList<NetworkListener>();
-	}
-	
-	/**
-	 * Creates a client with the server's host and port and if the client is a host.
-	 * 
-	 * @param host the server's host
-	 * @param port the server's port
-	 * @param isHost true if the client is a host, false otherwise
-	 */
-	public Client(String host, int port, boolean isHost) {
-		this(host, port);
-		this.isHost = isHost;
 	}
 	
 	/**
@@ -50,20 +37,21 @@ public class Client {
 	 * 
 	 * @return true if the client successfully connected to the client or false otherwise
 	 * @throws ConnectException if the server is full or does not exist
+	 * @throws SocketTimeoutException if the client could not connect to the server in time
 	 */
-	public synchronized boolean connect() throws ConnectException {
+	public synchronized boolean connect() throws ConnectException, SocketTimeoutException {
 		try {
-			socket = new Socket(host, port);
-			reader = new ClientReader(socket, isHost);
+			socket = new Socket();
+			socket.connect(new InetSocketAddress(host, port), 1000);
+			reader = new ClientReader(socket);
 			writer = new ClientWriter(socket);
 			reader.setListeners(listeners);
 			reader.start();
 			writer.start();
 			sendMessage(DataObject.HANDSHAKE, new Object[] {});
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			return false;
 		} catch (ConnectException e) {
+			throw e;
+		} catch (SocketTimeoutException e) {
 			throw e;
 		} catch (IOException e) {
 			disconnect();

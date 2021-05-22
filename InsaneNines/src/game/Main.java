@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.ConnectException;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -43,6 +44,7 @@ public class Main implements NetworkListener {
 	private String name;
 	private ArrayList<String> names;
 	private SwingWorker<String, Void> worker;
+	private SwingWorker<Boolean, Void> worker2;
 
 	/**
 	 * Displays the start menu.
@@ -60,7 +62,7 @@ public class Main implements NetworkListener {
 		menu = new JPanel();
 		instructions = new JPanel();
 		waitRoom = new JPanel();
-		l = new JLabel("Waiting for players... ");
+		l = new JLabel("Waiting for players...");
 		playerCount = new JLabel("1/4");
 		serverInfo = new JTextArea("IP Address: Loading...\nPort Number: Loading...");
 		name = null;
@@ -137,7 +139,7 @@ public class Main implements NetworkListener {
 				if (c != null) {
 					c.disconnect();
 				}
-				c = new Client(InetAddress.getLoopbackAddress().getHostAddress(), s.getPort(), true);
+				c = new Client(InetAddress.getLoopbackAddress().getHostAddress(), s.getPort());
 				c.addListener(Main.this);
 				try {
 					if (c.connect()) {
@@ -151,6 +153,7 @@ public class Main implements NetworkListener {
 									c.sendMessage(DataObject.INFORMATION, get());
 								} catch (InterruptedException e) {
 								} catch (ExecutionException e) {
+									e.getCause().printStackTrace();
 								} catch (CancellationException e) {
 								}
 							}
@@ -164,6 +167,8 @@ public class Main implements NetworkListener {
 					}
 				} catch (ConnectException e1) {
 					e1.printStackTrace();
+				} catch (SocketTimeoutException e1) {
+					e1.printStackTrace();
 				}
 			}
 		});
@@ -172,7 +177,7 @@ public class Main implements NetworkListener {
 			public void actionPerformed(ActionEvent e) {
 				JTextField ip = new JTextField();
 				JTextField port = new JTextField();
-				Object[] message = new Object[] {
+				Object[] message = {
 						"IP Address: ", ip,
 						"Port Number: ", port
 				};
@@ -181,21 +186,44 @@ public class Main implements NetworkListener {
 					try {
 						c = new Client(ip.getText(), Integer.parseInt(port.getText()));
 						c.addListener(Main.this);
-						if (c.connect()) {
-							if (start.getParent() == waitRoom) {
-								waitRoom.remove(start);
+						worker2 = new SwingWorker<Boolean, Void>() {
+							protected Boolean doInBackground() throws Exception {
+								return c.connect();
 							}
-							f.setContentPane(waitRoom);
-							f.revalidate();
-							f.repaint();
-						}
-						else {
-							JOptionPane.showMessageDialog(f, "Server does not exist.", "Join Server", JOptionPane.PLAIN_MESSAGE);
-						}
+							
+							protected void done() {
+								try {
+									boolean connected = get();
+									if (!connected) {
+										back.getActionListeners()[0].actionPerformed(new ActionEvent(back, ActionEvent.ACTION_PERFORMED,
+												""));
+										JOptionPane.showMessageDialog(f, "Could not connect to the server.", "Join Server",
+												JOptionPane.PLAIN_MESSAGE);
+									}
+								} catch (InterruptedException e) {
+								} catch (ExecutionException e) {
+									back.getActionListeners()[0].actionPerformed(new ActionEvent(back, ActionEvent.ACTION_PERFORMED,
+											""));
+									if (e.getCause() instanceof ConnectException) {
+										JOptionPane.showMessageDialog(f,"Server is not accepting any more connections"
+												+ " or does not exist.", "Join Server", JOptionPane.PLAIN_MESSAGE);
+									} else if (e.getCause() instanceof SocketTimeoutException) {
+										JOptionPane.showMessageDialog(f, "Server connection timed out.", "Join Server",
+												JOptionPane.PLAIN_MESSAGE);
+									} else if (e.getCause() instanceof IllegalArgumentException) {
+										JOptionPane.showMessageDialog(f, "Server does not exist.", "Join Server",
+												JOptionPane.PLAIN_MESSAGE);
+									}
+								}
+							}
+							
+						};
+						worker2.execute();
+						f.setContentPane(waitRoom);
+						f.revalidate();
+						f.repaint();
 					} catch (NumberFormatException nfe) {
 						JOptionPane.showMessageDialog(f, "Server does not exist.", "Join Server", JOptionPane.PLAIN_MESSAGE);
-					} catch (ConnectException ce) {
-						JOptionPane.showMessageDialog(f, "Server is full or does not exist.", "Join Server", JOptionPane.PLAIN_MESSAGE);
 					}
 				}
 			}
@@ -222,6 +250,17 @@ public class Main implements NetworkListener {
 				names = null;
 				if (worker != null) {
 					worker.cancel(true);
+					worker = null;
+				}
+				if (worker2 != null) {
+					worker2.cancel(true);
+					worker2 = null;
+				}
+				serverInfo.setText("IP Address: Loading...\nPort Number: Loading...");
+				l.setText("Waiting for players...");
+				playerCount.setText("1/4");
+				if (start.getParent() == waitRoom) {
+					waitRoom.remove(start);
 				}
 				f.setContentPane(menu);
 				f.revalidate();

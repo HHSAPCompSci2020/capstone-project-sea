@@ -77,11 +77,18 @@ public class Card implements Serializable, Comparable<Card> {
 	}
 
 	/**
-	 * @param top the current top card of the deck
+	 * @param top the current top card
+	 * @param suit the suit chosen if the current top card's rank is "NINE"
 	 * @return true if this card can be played on top of the current top card or false otherwise
 	 */
-	public boolean canPlay(Card top) {
-		return rank.equals(top.rank) || suit.equals(top.suit) || isNine();
+	public boolean canPlay(Card top, String suit) {
+		if (isNine()) {
+			return true;
+		}
+		if (top.isNine()) {
+			return this.suit.equals(suit);
+		}
+		return rank.equals(top.rank) || this.suit.equals(top.suit);
 	}
 
 	@Override

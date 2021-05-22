@@ -65,22 +65,27 @@ public class ClientHandler implements Runnable {
 							Card card = (Card) data.message[0];
 							Deck played = server.getPlayed();
 							played.addCard(card);
-							int numCards = (int) data.message[1];
-							if (numCards > 0) {
-								AtomicInteger turn = server.getTurn();
-								turn.set((turn.get()+1)%server.getHandlers().size());
-								for (ClientHandler ch : server.getHandlers()) {
-									DataObject next = new DataObject();
-									next.messageType = DataObject.TURN;
-									next.message = new Object[] {turn.get(), card, numCards};
-									ch.out.writeObject(next);
-									ch.out.flush();
-								}
-							} else {
+							boolean won = (boolean) data.message[1];
+							if (won) {
 								for (ClientHandler ch : server.getHandlers()) {
 									DataObject next = new DataObject();
 									next.messageType = DataObject.END;
 									next.message = new Object[] {name, card};
+									ch.out.writeObject(next);
+									ch.out.flush();
+								}
+							} else {
+								AtomicInteger turn = server.getTurn();
+								turn.set((turn.get()+server.getDirection().get()+server.getHandlers().size())
+										%server.getHandlers().size());
+								for (ClientHandler ch : server.getHandlers()) {
+									DataObject next = new DataObject();
+									next.messageType = DataObject.TURN;
+									if (card.isNine()) {
+										next.message = new Object[] {turn.get(), card, data.message[2]};
+									} else {
+										next.message = new Object[] {turn.get(), card};
+									}
 									ch.out.writeObject(next);
 									ch.out.flush();
 								}
@@ -97,12 +102,35 @@ public class ClientHandler implements Runnable {
 								cards2.add(top);
 								draw.shuffle();
 							}
-							Card card = draw.removeTop();
-							DataObject next = new DataObject();
-							next.messageType = DataObject.DRAW;
-							next.message = new Object[] {card};
-							out.writeObject(next);
-							out.flush();
+							if (draw.getDeck().isEmpty()) {
+								if (data.message.length == 0) {
+									AtomicInteger turn = server.getTurn();
+									turn.set((turn.get()+server.getDirection().get()+server.getHandlers().size())
+											%server.getHandlers().size());
+									for (ClientHandler ch : server.getHandlers()) {
+										DataObject next = new DataObject();
+										next.messageType = DataObject.TURN;
+										next.message = new Object[] {turn.get()};
+										ch.out.writeObject(next);
+										ch.out.flush();
+									}
+								} else {
+									DataObject next = new DataObject();
+									next.messageType = DataObject.TURN;
+									next.message = new Object[] {};
+									out.writeObject(next);
+									out.flush();
+								}
+							} else {
+								Card card = draw.removeTop();
+								for (ClientHandler ch : server.getHandlers()) {
+									DataObject next = new DataObject();
+									next.messageType = DataObject.DRAW;
+									next.message = new Object[] {server.getTurn().get(), card};
+									ch.out.writeObject(next);
+									ch.out.flush();
+								}
+							}
 						} else if(data.messageType.equals(DataObject.HANDSHAKE)) {
 							ArrayList<String> names = new ArrayList<String>();
 							for (ClientHandler ch : server.getHandlers()) {
@@ -118,7 +146,7 @@ public class ClientHandler implements Runnable {
 						} else if (data.messageType.equals(DataObject.START)) {
 							server.getStarted().set(true);
 							int cards = 5;
-							if (server.getHandlers().size() == server.getMinClients()) {
+							if (server.getHandlers().size() == 2) {
 								cards = 7;
 							}
 							for (ClientHandler ch : server.getHandlers()) {

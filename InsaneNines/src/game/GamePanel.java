@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -42,10 +43,11 @@ public class GamePanel extends JFrame implements NetworkListener {
 	private JTextField message;
 	private JScrollPane pane, chat;
 	private JLabel playerTurn, name1, name2, name3, name4, num1, num2, num3, num4, draw, topLabel;
-	private JButton send;
+	private JButton send, leave;
 	private int pos;
 	private int turn;
 	private boolean myTurn;
+	private String suit;
 	private Card top;
 	private ArrayList<Player> players;
 	private Client client;
@@ -63,7 +65,6 @@ public class GamePanel extends JFrame implements NetworkListener {
 	 * @param Main the main menu
 	 */
 	public GamePanel(Client client, String name, ArrayList<String> names, Deck deck, int turn, Card top, Main main) {
-		myTurn = false;
 		this.turn = turn;
 		this.top = top;
 		this.main = main;
@@ -97,18 +98,38 @@ public class GamePanel extends JFrame implements NetworkListener {
 			JLabel cardLabel = new JLabel(card.getImage());
 			cardLabel.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
-					if (myTurn && card.canPlay(GamePanel.this.top)) {
-						myTurn = false;
-						int numCards = players.get(pos).play(card);
+					if (myTurn && card.canPlay(GamePanel.this.top, suit)) {
+						String suit = null;
+						if (card.isNine()) {
+							Object[] suits = {"CLUBS", "DIAMONDS", "HEARTS", "SPADES"};
+							suit = (String) JOptionPane.showInputDialog(GamePanel.this, "Choose the next suit:", "Suit Picker",
+									JOptionPane.PLAIN_MESSAGE, null, suits, suits[0]);
+							if (suit == null) {
+								return;
+							}
+						}
+						boolean won = players.get(pos).play(card) == 0;
 						cards.remove(cardLabel);
 						revalidate();
 						repaint();
-						client.sendMessage(DataObject.PLAY, new Object[] {card, numCards});
+						if (suit == null) {
+							GamePanel.this.client.sendMessage(DataObject.PLAY, new Object[] {card, won});
+						} else {
+							GamePanel.this.client.sendMessage(DataObject.PLAY, new Object[] {card, won, suit});
+						}
 					}
 				}
 			});
 			cards.add(cardLabel);
 		}
+		leave = new JButton("Leave Game");
+		leave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setVisible(false);
+				main.backToMenu(null);
+			}
+		});
+		
 		largeArea2 = new JPanel();
 		largeArea2.setLayout(new BoxLayout(largeArea2, BoxLayout.X_AXIS));
 		largeArea4 = new JPanel();
@@ -166,6 +187,14 @@ public class GamePanel extends JFrame implements NetworkListener {
 		draw.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (myTurn) {
+					if (players.get(pos).canPlay(GamePanel.this.top, suit)) {
+						int choice = JOptionPane.showConfirmDialog(GamePanel.this, "You can play a card. Do you still want to draw?",
+								"Draw Card", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
+						if (choice == JOptionPane.YES_OPTION) {
+							client.sendMessage(DataObject.DRAW, new Object[] {true});
+						}
+						return;
+					}
 					client.sendMessage(DataObject.DRAW, new Object[] {});
 				}
 			}
@@ -235,6 +264,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 		
 		add(game, BorderLayout.CENTER);
 		add(chatArea, BorderLayout.EAST);
+		add(leave, BorderLayout.SOUTH);
 		
 		setBackground(BACKGROUND_COLOR);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -248,55 +278,96 @@ public class GamePanel extends JFrame implements NetworkListener {
 	public void messageReceived(DataObject data) {
 		if (data.messageType.equals(DataObject.TURN)) {
 			turn = (int) data.message[0];
-			top = (Card) data.message[1];
-			topLabel.setIcon(top.getImage());
 			if (turn == pos) {
 				myTurn = true;
-			}
-			playerTurn.setText(players.get(turn).getName() + "'s Turn");
-			int numCards = (int) data.message[2];
-			int prevTurn = (turn - 1 + players.size()) % players.size();
-			players.get(prevTurn).setNumCards(numCards);
-			if (prevTurn == 0) {
-				num1.setText(numCards + " Cards");
-			} else if (prevTurn == 1) {
-				num2.setText(numCards + " Cards");
-			} else if (prevTurn == 2) {
-				num3.setText(numCards + " Cards");
 			} else {
-				num4.setText(numCards + " Cards");
+				myTurn = false;
+			}
+			if (data.message.length > 1) {
+				top = (Card) data.message[1];
+				topLabel.setIcon(top.getImage());
+				if (top.isNine()) {
+					suit = (String) data.message[2];
+					playerTurn.setText(players.get(turn).getName() + "'s Turn, Must Play " + suit);
+				} else {
+					suit = null;
+					playerTurn.setText(players.get(turn).getName() + "'s Turn");
+				}
+				int prevTurn = (turn - 1 + players.size()) % players.size();
+				int numCards = players.get(prevTurn).getNumCards() - 1;
+				players.get(prevTurn).setNumCards(numCards);
+				if (prevTurn == 0) {
+					num1.setText(numCards + " Cards");
+				} else if (prevTurn == 1) {
+					num2.setText(numCards + " Cards");
+				} else if (prevTurn == 2) {
+					num3.setText(numCards + " Cards");
+				} else {
+					num4.setText(numCards + " Cards");
+				}
+			} else {
+				if (top.isNine()) {
+					playerTurn.setText(players.get(turn).getName() + "'s Turn, Must Play " + suit);
+				} else {
+					suit = null;
+					playerTurn.setText(players.get(turn).getName() + "'s Turn");
+				}
+				int prevTurn = (turn - 1 + players.size()) % players.size();
+				if (prevTurn == pos) {
+					JOptionPane.showMessageDialog(this, "There are no more cards to be drawn. Your turn has been skipped.", "Draw Card", JOptionPane.PLAIN_MESSAGE);
+				}
 			}
 			revalidate();
 			repaint();
 		} else if (data.messageType.equals(DataObject.DRAW)) {
-			Card card = (Card) data.message[0];
-			int numCards = players.get(pos).draw(card);
-			JLabel cardLabel = new JLabel(card.getImage());
-			cardLabel.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					if (myTurn && card.canPlay(top)) {
-						myTurn = false;
-						int numCards = players.get(pos).play(card);
-						cards.remove(cardLabel);
-						revalidate();
-						repaint();
-						client.sendMessage(DataObject.PLAY, new Object[] {card, numCards});
-					}
-				}
-			});
-			cards.add(cardLabel);
-			if (pos == 0) {
-				num1.setText(numCards + " Cards");
-			} else if (pos == 1) {
-				num2.setText(numCards + " Cards");
-			} else if (pos == 2) {
-				num3.setText(numCards + " Cards");
+			if (data.message.length == 0) {
+				JOptionPane.showMessageDialog(this, "There are no more cards to be drawn. You must play a card.", "Draw Card", JOptionPane.PLAIN_MESSAGE);
 			} else {
-				num4.setText(numCards + " Cards");
+				int turn = (int) data.message[0];
+				Card card = (Card) data.message[1];
+				if (turn == pos) {
+					players.get(pos).draw(card);
+					JLabel cardLabel = new JLabel(card.getImage());
+					cardLabel.addMouseListener(new MouseAdapter() {
+						public void mouseClicked(MouseEvent e) {
+							if (myTurn && card.canPlay(GamePanel.this.top, suit)) {
+								String suit = null;
+								if (card.isNine()) {
+									Object[] suits = {"CLUBS", "DIAMONDS", "HEARTS", "SPADES"};
+									suit = (String) JOptionPane.showInputDialog(GamePanel.this, "Choose the next suit:", "Suit Picker",
+											JOptionPane.PLAIN_MESSAGE, null, suits, suits[0]);
+									if (suit == null) {
+										return;
+									}
+								}
+								boolean won = players.get(pos).play(card) == 0;
+								cards.remove(cardLabel);
+								revalidate();
+								repaint();
+								if (suit == null) {
+									client.sendMessage(DataObject.PLAY, new Object[] {card, won});
+								} else {
+									client.sendMessage(DataObject.PLAY, new Object[] {card, won, suit});
+								}
+							}
+						}
+					});
+					cards.add(cardLabel);
+				}
+				int numCards = players.get(turn).getNumCards() + 1;
+				players.get(turn).setNumCards(numCards);
+				if (turn == 0) {
+					num1.setText(numCards + " Cards");
+				} else if (turn == 1) {
+					num2.setText(numCards + " Cards");
+				} else if (turn == 2) {
+					num3.setText(numCards + " Cards");
+				} else {
+					num4.setText(numCards + " Cards");
+				}
+				revalidate();
+				repaint();
 			}
-			revalidate();
-			repaint();
-			
 		} else if (data.messageType.equals(DataObject.END)) {
 			playerTurn.setText((String) data.message[0] + " wins!");
 			players.get(turn).setNumCards(0);

@@ -56,10 +56,7 @@ public class Deck implements Serializable {
 	 * @return this deck's top card after removing it
 	 */
 	public Card removeTop() {
-		if(cards.size() > 1) {
-			return cards.remove(cards.size()-1);
-		}
-		return null;
+		return cards.remove(cards.size()-1);
 	}
 	
 	/**

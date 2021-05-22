@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.SwingUtilities;
 
@@ -16,8 +17,7 @@ import javax.swing.SwingUtilities;
 public class ClientReader implements Runnable {
 	private Socket socket;
 	private ObjectInputStream in;
-	private boolean isHost;
-	private boolean looping;
+	private AtomicBoolean looping;
 	private ArrayList<NetworkListener> listeners;
 	
 	/**
@@ -25,9 +25,9 @@ public class ClientReader implements Runnable {
 	 * 
 	 * @param socket the client's socket
 	 */
-	public ClientReader(Socket socket, boolean isHost) {
+	public ClientReader(Socket socket) {
 		this.socket = socket;
-		this.isHost = isHost;
+		looping = new AtomicBoolean();
 	}
 	
 	/**
@@ -43,7 +43,7 @@ public class ClientReader implements Runnable {
 	public void start() {
 		try {
 			in = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
-			looping = true;
+			looping.set(true);;
 			new Thread(this).start();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -52,9 +52,9 @@ public class ClientReader implements Runnable {
 	
 	@Override
 	public void run() {
-		looping = true;
+		looping.set(true);
 		boolean disconnected = false;
-		while (looping) {
+		while (looping.get()) {
 			try {
 				Object input = in.readObject();
 				if (input instanceof DataObject) {
@@ -72,8 +72,7 @@ public class ClientReader implements Runnable {
 					}
 				}
 			} catch (IOException e) {
-				stop();
-				if (!disconnected && !isHost) {
+				if (!disconnected && looping.get()) {
 					DataObject data = new DataObject();
 					data.messageType = DataObject.DISCONNECT;
 					data.message = new Object[] {};
@@ -86,6 +85,7 @@ public class ClientReader implements Runnable {
 						});
 					}
 				}
+				stop();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -101,6 +101,6 @@ public class ClientReader implements Runnable {
 	 * Stops reading data from the server.
 	 */
 	public void stop() {
-		looping = false;
+		looping.set(false);
 	}
 }

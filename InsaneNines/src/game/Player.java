@@ -82,19 +82,23 @@ public class Player {
 	}
 	
 	/**
-	 * Draws a card by adding it to the end of the deck.
+	 * Draws a card by adding it to the deck at its sorted position.
+	 * 
 	 * @param card the card to be drawn
-	 * @return the new amount of cards
+	 * @return the position of the newly added card
 	 */
 	public int draw(Card card) {
 		hand.addCard(card);
-		return hand.getDeck().size();
+		hand.sort();
+		return hand.indexOf(card);
 	}
 	
 	/**
+	 * Returns whether this player can play any card in their deck on top of the current top card.
+	 * 
 	 * @param top the current top card
 	 * @param suit the suit chosen if the current top card's rank is "NINE"
-	 * @return true if any card in this player's deck can be played on top of the current top card or false otherwise
+	 * @return true if this player can play any card in their deck on top of the current top card or false otherwise
 	 */
 	public boolean canPlay(Card top, String suit) {
 		for (Card card : hand.getDeck()) {

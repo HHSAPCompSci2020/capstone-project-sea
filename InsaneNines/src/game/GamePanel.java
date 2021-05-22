@@ -46,6 +46,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 	private JButton send, leave;
 	private int pos;
 	private int turn;
+	private int prevTurn;
 	private boolean myTurn;
 	private String suit;
 	private Card top;
@@ -72,11 +73,13 @@ public class GamePanel extends JFrame implements NetworkListener {
 		for (int i = 0; i < names.size(); i++) {
 			if (names.get(i).equals(name)) {
 				pos = i;
+				deck.sort();
 				players.add(new Player(name, deck));
 			} else {
 				players.add(new Player(names.get(i), deck.getDeck().size()));
 			}
 		}
+		prevTurn = -1;
 		this.client = client;
 		playerTurn = new JLabel();
 		if (turn == pos) {
@@ -286,6 +289,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 	@Override
 	public void messageReceived(DataObject data) {
 		if (data.messageType.equals(DataObject.TURN)) {
+			prevTurn = turn;
 			turn = (int) data.message[0];
 			if (turn == pos) {
 				myTurn = true;
@@ -303,7 +307,6 @@ public class GamePanel extends JFrame implements NetworkListener {
 					suit = null;
 					playerTurn.setText(players.get(turn).getName() + "'s Turn");
 				}
-				int prevTurn = (turn - 1 + players.size()) % players.size();
 				int numCards = players.get(prevTurn).getNumCards() - 1;
 				players.get(prevTurn).setNumCards(numCards);
 				if (prevTurn == 0) {
@@ -322,21 +325,21 @@ public class GamePanel extends JFrame implements NetworkListener {
 					suit = null;
 					playerTurn.setText(players.get(turn).getName() + "'s Turn");
 				}
-				int prevTurn = (turn - 1 + players.size()) % players.size();
 				if (prevTurn == pos) {
-					JOptionPane.showMessageDialog(this, "There are no more cards to be drawn. Your turn has been skipped.", "Draw Card", JOptionPane.PLAIN_MESSAGE);
+					JOptionPane.showMessageDialog(this, "There are no more cards to be drawn. Your turn has been skipped.",
+							"Draw Card", JOptionPane.PLAIN_MESSAGE);
 				}
 			}
 			revalidate();
 			repaint();
 		} else if (data.messageType.equals(DataObject.DRAW)) {
 			if (data.message.length == 0) {
-				JOptionPane.showMessageDialog(this, "There are no more cards to be drawn. You must play a card.", "Draw Card", JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(this, "There are no more cards to be drawn. You must play a card.", "Draw Card",
+						JOptionPane.PLAIN_MESSAGE);
 			} else {
-				int turn = (int) data.message[0];
-				Card card = (Card) data.message[1];
+				Card card = (Card) data.message[0];
 				if (turn == pos) {
-					players.get(pos).draw(card);
+					int cardPos = players.get(pos).draw(card);
 					JLabel cardLabel = new JLabel(card.getImage());
 					cardLabel.addMouseListener(new MouseAdapter() {
 						public void mouseClicked(MouseEvent e) {
@@ -344,8 +347,8 @@ public class GamePanel extends JFrame implements NetworkListener {
 								String suit = null;
 								if (card.isNine()) {
 									Object[] suits = {"CLUBS", "DIAMONDS", "HEARTS", "SPADES"};
-									suit = (String) JOptionPane.showInputDialog(GamePanel.this, "Choose the next suit:", "Suit Picker",
-											JOptionPane.PLAIN_MESSAGE, null, suits, suits[0]);
+									suit = (String) JOptionPane.showInputDialog(GamePanel.this, "Choose the next suit:",
+											"Suit Picker", JOptionPane.PLAIN_MESSAGE, null, suits, suits[0]);
 									if (suit == null) {
 										return;
 									}
@@ -363,7 +366,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 						}
 					});
 					cardLabel.setToolTipText(card.toString());
-					cards.add(cardLabel);
+					cards.add(cardLabel, cardPos);
 				}
 				int numCards = players.get(turn).getNumCards() + 1;
 				players.get(turn).setNumCards(numCards);

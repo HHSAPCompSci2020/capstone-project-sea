@@ -91,6 +91,8 @@ public class Card implements Serializable, Comparable<Card> {
 	}
 
 	/**
+	 * Returns whether this card can be played on top of the current top card.
+	 * 
 	 * @param top the current top card
 	 * @param suit the suit chosen if the current top card's rank is "NINE"
 	 * @return true if this card can be played on top of the current top card or false otherwise

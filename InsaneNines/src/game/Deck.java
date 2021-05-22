@@ -29,14 +29,6 @@ public class Deck implements Serializable {
 	}
 	
 	/**
-	 * @param index the index of the card
-	 * @return the card with the specified index
-	 */
-	public Card getCard(int index) {
-		return cards.get(index);
-	}
-	
-	/**
 	 * Adds a card to the top of this deck.
 	 * 
 	 * @param card the card to add
@@ -46,6 +38,18 @@ public class Deck implements Serializable {
 	}
 	
 	/**
+	 * Finds a card in this deck and returns its index.
+	 * 
+	 * @param card the card to find in this deck
+	 * @return the card's index
+	 */
+	public int indexOf(Card card) {
+		return cards.indexOf(card);
+	}
+	
+	/**
+	 * Returns this deck's top card
+	 * 
 	 * @return this deck's top card
 	 */
 	public Card getTop() {
@@ -53,16 +57,25 @@ public class Deck implements Serializable {
 	}
 	
 	/**
-	 * @return this deck's top card after removing it
+	 * Removes and returns this deck's top card
+	 * 
+	 * @return this deck's removed top card
 	 */
 	public Card removeTop() {
 		return cards.remove(cards.size()-1);
 	}
 	
 	/**
-	 * Rearranges the order of the cards in this deck.
+	 * Randomly rearranges the order of the cards in this deck.
 	 */
 	public void shuffle() {
 		Collections.shuffle(cards);
+	}
+	
+	/**
+	 * Sorts this deck in ascending order by suit and then rank.
+	 */
+	public void sort() {
+		Collections.sort(cards);
 	}
 }

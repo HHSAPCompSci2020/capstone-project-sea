@@ -328,9 +328,7 @@ public class Main implements NetworkListener {
 				names.add((String) data.message[0]);
 			}
 			playerCount.setText(names.size() + "/4");
-			if (names.size() == 1) {
-				l.setText("Waiting for players...");
-			} else {
+			if (names.size() >= 2) {
 				l.setText("Ready to start!");
 			}
 			if (data.message[2] != null) {
@@ -353,6 +351,9 @@ public class Main implements NetworkListener {
 				if (names != null) {
 					names.remove((String) data.message[0]);
 					playerCount.setText((int) data.message[1] + "/4");
+					if (names.size() == 1) {
+						l.setText("Waiting for players...");
+					}
 				}
 			} else {
 				back.getActionListeners()[0].actionPerformed(new ActionEvent(back, ActionEvent.ACTION_PERFORMED, ""));

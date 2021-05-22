@@ -123,7 +123,7 @@ public class ClientHandler implements Runnable {
 									}
 								} else {
 									DataObject next = new DataObject();
-									next.messageType = DataObject.TURN;
+									next.messageType = DataObject.DRAW;
 									next.message = new Object[] {};
 									out.writeObject(next);
 									out.flush();
@@ -133,7 +133,7 @@ public class ClientHandler implements Runnable {
 								for (ClientHandler ch : server.getHandlers()) {
 									DataObject next = new DataObject();
 									next.messageType = DataObject.DRAW;
-									next.message = new Object[] {server.getTurn().get(), card};
+									next.message = new Object[] {card};
 									ch.out.writeObject(next);
 									ch.out.flush();
 								}

@@ -114,5 +114,10 @@ public class Card implements Serializable, Comparable<Card> {
 		}
 		return suit.compareTo(o.suit);
 	}
+	
+	@Override
+	public String toString() {
+		return rank + " OF " + suit;
+	}
 }
 

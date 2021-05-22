@@ -120,6 +120,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 					}
 				}
 			});
+			cardLabel.setToolTipText(card.toString());
 			cards.add(cardLabel);
 		}
 		bottom = new JPanel();
@@ -205,8 +206,10 @@ public class GamePanel extends JFrame implements NetworkListener {
 			}
 		});
 		draw.setAlignmentX(Component.CENTER_ALIGNMENT);
+		draw.setToolTipText("Draw Card");
 		topLabel = new JLabel(top.getImage());
 		topLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		topLabel.setToolTipText("Top Card: " + top.toString());
 		
 		area1.add(name1);
 		area1.add(num1);
@@ -218,6 +221,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 		area4.add(num4);
 		area5.add(Box.createHorizontalGlue());
 		area5.add(draw);
+		area5.add(Box.createRigidArea(new Dimension(10, 105)));
 		area5.add(topLabel);
 		area5.add(Box.createHorizontalGlue());
 
@@ -291,6 +295,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 			if (data.message.length > 1) {
 				top = (Card) data.message[1];
 				topLabel.setIcon(top.getImage());
+				topLabel.setToolTipText("Top Card: " + top.toString());
 				if (top.isNine()) {
 					suit = (String) data.message[2];
 					playerTurn.setText(players.get(turn).getName() + "'s Turn, Must Play " + suit);
@@ -357,6 +362,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 							}
 						}
 					});
+					cardLabel.setToolTipText(card.toString());
 					cards.add(cardLabel);
 				}
 				int numCards = players.get(turn).getNumCards() + 1;

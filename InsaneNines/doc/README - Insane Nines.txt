@@ -11,10 +11,9 @@ What is the story?
 What are the rules? What is the goal?
 Who would want to use your program?
 What are the primary features of your program?
-You and your friends are looking for a new game to prove your gaming superiority. You stumble upon the card game Insane Nines. Perfect. You call up your friends and start the battle for domination in this ultimate test of skill.
 
 
-Insane Nines is a turn based card game using the standard 52 card deck. If there are 2 players, each player starts with 7 cards. Otherwise, each player starts with 5 cards. There is initially a randomly chosen card from the draw pile to start the game. The cards played will go into the played pile. A player can either play a card with the same suit or rank, or the number nine no matter what. If they can’t play a card, they will have to draw from the pile until they can play a card. The draw pile will be refilled by the played pile when empty. The first player to discard all their cards wins the game.
+Ever since the beginning of the COVID-19 pandemic, people have been required to practice social distancing, preventing them from partaking in many in person social activities such as playing cards. Our game, Insane Nines, is a shedding type card game using the standard 52 card deck that can be played on a local area network. This allows one to keep distance while still enjoying the game. The objective of the game is to be the first player to discard all their cards. Each player starts with 5 cards, or 7 cards in a 2 player game. 1 normal card is placed in the played pile to start the game. The remaining cards are placed face down in the draw pile. If the draw pile is empty, all the cards in the played pile other than the top card are moved to the draw pile. If the draw pile is still empty, the player’s turn is skipped if they cannot play a card. A player can play a card with the same rank or suit as the top card, or the card 9 at any time and declare the suit of the next player’s card. Playing a queen skips the next player’s turn, and playing an ace reverses the direction of play.
 
 
 Instructions:
@@ -25,7 +24,7 @@ Will you have menus that need to be navigated? What will they look like?
 Do actions need to be taken in a certain order?
 
 
-Insane Nines is a turn based game where 2 - 4 players play and draw cards until they run out of cards. Clicking on a card will play the card. Clicking on the draw pile will draw a card. You can play cards that have matching numbers or suits with the last played card or you can play the card 9 no matter what.
+One player must create a server and share the server information with the other players. The other players will join the server using the information. When enough players join the server, the host can start the game. In the game, players take turns to play. A player can click on their cards to play them or click on the draw deck to draw cards.
 
 
 Features List (THE ONLY SECTION THAT CANNOT CHANGE LATER):
@@ -80,7 +79,7 @@ Credits:
 
 Andy Ding - GUI in Main, Card, Deck, Player, UML Diagram, README
 Samuel Zhou - GUI in GamePanel, Card, Deck, Player, images, UML Diagram
-Eric Chang - Server, ClientHandler, Client, ClientReader, ClientWriter, DataObject, NetworkListener, JavaDocs
+Eric Chang - Connecting GUI with networking, all the networking classes, JavaDocs
 
 
 Outside resources:

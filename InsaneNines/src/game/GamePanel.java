@@ -64,7 +64,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 	 * @param deck the deck of this panel's player
 	 * @param turn the starting player's position
 	 * @param top the starting card
-	 * @param Main the main menu
+	 * @param main the main menu
 	 */
 	public GamePanel(Client client, String name, ArrayList<String> names, Deck deck, int turn,
 			Card top, Main main) {

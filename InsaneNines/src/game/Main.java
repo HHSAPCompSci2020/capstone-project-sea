@@ -185,7 +185,8 @@ public class Main implements NetworkListener {
 						"IP Address: ", ip,
 						"Port Number: ", port
 				};
-				int choice = JOptionPane.showConfirmDialog(f, message, "Join Server", JOptionPane.OK_CANCEL_OPTION);
+				int choice = JOptionPane.showConfirmDialog(f, message, "Join Server",
+						JOptionPane.OK_CANCEL_OPTION);
 				if (choice == JOptionPane.OK_OPTION) {
 					try {
 						c = new Client(ip.getText(), Integer.parseInt(port.getText()));
@@ -199,24 +200,28 @@ public class Main implements NetworkListener {
 								try {
 									boolean connected = get();
 									if (!connected) {
-										back.getActionListeners()[0].actionPerformed(new ActionEvent(back, ActionEvent.ACTION_PERFORMED,
-												""));
-										JOptionPane.showMessageDialog(f, "Could not connect to the server.", "Join Server",
+										back.getActionListeners()[0].actionPerformed(new ActionEvent(
+												back, ActionEvent.ACTION_PERFORMED, ""));
+										JOptionPane.showMessageDialog(f,
+												"Could not connect to the server.", "Join Server",
 												JOptionPane.PLAIN_MESSAGE);
 									}
 								} catch (InterruptedException e) {
 								} catch (ExecutionException e) {
-									back.getActionListeners()[0].actionPerformed(new ActionEvent(back, ActionEvent.ACTION_PERFORMED,
-											""));
+									back.getActionListeners()[0].actionPerformed(new ActionEvent(
+											back, ActionEvent.ACTION_PERFORMED, ""));
 									if (e.getCause() instanceof ConnectException) {
-										JOptionPane.showMessageDialog(f,"Server is not accepting any more connections"
-												+ " or does not exist.", "Join Server", JOptionPane.PLAIN_MESSAGE);
+										JOptionPane.showMessageDialog(f,
+												"Server is not accepting any more connections"
+												+ " or does not exist.", "Join Server",
+												JOptionPane.PLAIN_MESSAGE);
 									} else if (e.getCause() instanceof SocketTimeoutException) {
-										JOptionPane.showMessageDialog(f, "Server connection timed out.", "Join Server",
+										JOptionPane.showMessageDialog(f,
+												"Server connection timed out.", "Join Server",
 												JOptionPane.PLAIN_MESSAGE);
 									} else if (e.getCause() instanceof IllegalArgumentException) {
-										JOptionPane.showMessageDialog(f, "Server does not exist.", "Join Server",
-												JOptionPane.PLAIN_MESSAGE);
+										JOptionPane.showMessageDialog(f, "Server does not exist.",
+												"Join Server", JOptionPane.PLAIN_MESSAGE);
 									}
 								}
 							}
@@ -227,7 +232,8 @@ public class Main implements NetworkListener {
 						f.revalidate();
 						f.repaint();
 					} catch (NumberFormatException nfe) {
-						JOptionPane.showMessageDialog(f, "Server does not exist.", "Join Server", JOptionPane.PLAIN_MESSAGE);
+						JOptionPane.showMessageDialog(f, "Server does not exist.", "Join Server",
+								JOptionPane.PLAIN_MESSAGE);
 					}
 				}
 			}
@@ -278,7 +284,8 @@ public class Main implements NetworkListener {
 				if (players >= 2) {
 					c.sendMessage(DataObject.START, new Object[] {names});
 				} else {
-					JOptionPane.showMessageDialog(f, "Must have at least 2 players to start.", "Start Game", JOptionPane.PLAIN_MESSAGE);
+					JOptionPane.showMessageDialog(f, "Must have at least 2 players to start.",
+							"Start Game", JOptionPane.PLAIN_MESSAGE);
 				}
 			}
 			
@@ -286,18 +293,20 @@ public class Main implements NetworkListener {
 		
 		changeName.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String newName = (String) JOptionPane.showInputDialog(f, "Enter new name:", "Name Change", JOptionPane.PLAIN_MESSAGE,
-						null, null, name);
+				String newName = (String) JOptionPane.showInputDialog(f, "Enter new name:",
+						"Name Change", JOptionPane.PLAIN_MESSAGE, null, null, name);
 				if (newName == null) {
 					return;
 				}
 				newName = newName.trim();
 				if (newName.equals("")) {
-					JOptionPane.showMessageDialog(f, "Name cannot be blank.", "Name Change", JOptionPane.PLAIN_MESSAGE);
+					JOptionPane.showMessageDialog(f, "Name cannot be blank.",
+							"Name Change", JOptionPane.PLAIN_MESSAGE);
 				} else if (!newName.equals(name)) {
 					for (String name : names) {
 						if (newName.equals(name)) {
-							JOptionPane.showMessageDialog(f, "Name is already in use.", "Name Change", JOptionPane.PLAIN_MESSAGE);
+							JOptionPane.showMessageDialog(f, "Name is already in use.",
+									"Name Change", JOptionPane.PLAIN_MESSAGE);
 							return;
 						}
 					}
@@ -332,10 +341,12 @@ public class Main implements NetworkListener {
 				l.setText("Ready to start!");
 			}
 			if (data.message[2] != null) {
-				serverInfo.setText("IP Address: " + data.message[2] + "\nPort Number: " + data.message[3]);
+				serverInfo.setText("IP Address: " + data.message[2] + "\nPort Number: "
+						+ data.message[3]);
 			}
 		} else if (data.messageType.equals(DataObject.INFORMATION)) {
-			serverInfo.setText("IP Address: " + data.message[0] + "\nPort Number: " + data.message[1]);
+			serverInfo.setText("IP Address: " + data.message[0] + "\nPort Number: "
+					+ data.message[1]);
 		} else if (data.messageType.equals(DataObject.START)) {
 			game = new GamePanel(c, name, names, (Deck) data.message[0],
 					(int) data.message[1], (Card) data.message[2], this);
@@ -356,9 +367,10 @@ public class Main implements NetworkListener {
 					}
 				}
 			} else {
-				back.getActionListeners()[0].actionPerformed(new ActionEvent(back, ActionEvent.ACTION_PERFORMED, ""));
-				JOptionPane.showMessageDialog(f, "Host disconnected. The server has been closed.", "Disconnection",
-						JOptionPane.PLAIN_MESSAGE);
+				back.getActionListeners()[0].actionPerformed(new ActionEvent(back,
+						ActionEvent.ACTION_PERFORMED, ""));
+				JOptionPane.showMessageDialog(f, "Host disconnected. The server has been closed.",
+						"Disconnection", JOptionPane.PLAIN_MESSAGE);
 			}
 		}
 	}
@@ -369,7 +381,8 @@ public class Main implements NetworkListener {
 	 * @param message optional message to display
 	 */
 	public void backToMenu(String message) {
-		back.getActionListeners()[0].actionPerformed(new ActionEvent(back, ActionEvent.ACTION_PERFORMED, ""));
+		back.getActionListeners()[0].actionPerformed(new ActionEvent(back,
+				ActionEvent.ACTION_PERFORMED, ""));
 		game = null;
 		f.setVisible(true);
 		if (message != null) {

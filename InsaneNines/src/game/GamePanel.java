@@ -38,7 +38,8 @@ import network.NetworkListener;
 public class GamePanel extends JFrame implements NetworkListener {
 	private static final long serialVersionUID = 9043093457846944651L;
 	private static final Color BACKGROUND_COLOR = Color.GREEN;
-	private JPanel game, middle, cards, area1, area2, area3, area4, area5, largeArea2, largeArea4, chatArea, sendArea, bottom;
+	private JPanel game, middle, cards, area1, area2, area3, area4, area5, largeArea2, largeArea4,
+	chatArea, sendArea, bottom;
 	private JTextArea messages;
 	private JTextField message;
 	private JScrollPane pane, chat;
@@ -65,7 +66,8 @@ public class GamePanel extends JFrame implements NetworkListener {
 	 * @param top the starting card
 	 * @param Main the main menu
 	 */
-	public GamePanel(Client client, String name, ArrayList<String> names, Deck deck, int turn, Card top, Main main) {
+	public GamePanel(Client client, String name, ArrayList<String> names, Deck deck, int turn,
+			Card top, Main main) {
 		this.turn = turn;
 		this.top = top;
 		this.main = main;
@@ -103,9 +105,10 @@ public class GamePanel extends JFrame implements NetworkListener {
 				public void mouseClicked(MouseEvent e) {
 					if (myTurn && card.canPlay(GamePanel.this.top, suit)) {
 						String suit = null;
-						if (card.isNine()) {
+						if (card.isNine() && players.get(pos).getNumCards() > 1) {
 							Object[] suits = {"CLUBS", "DIAMONDS", "HEARTS", "SPADES"};
-							suit = (String) JOptionPane.showInputDialog(GamePanel.this, "Choose the next suit:", "Suit Picker",
+							suit = (String) JOptionPane.showInputDialog(GamePanel.this,
+									"Choose the next suit:", "Suit Picker",
 									JOptionPane.PLAIN_MESSAGE, null, suits, suits[0]);
 							if (suit == null) {
 								return;
@@ -116,9 +119,11 @@ public class GamePanel extends JFrame implements NetworkListener {
 						revalidate();
 						repaint();
 						if (suit == null) {
-							GamePanel.this.client.sendMessage(DataObject.PLAY, new Object[] {card, won});
+							GamePanel.this.client.sendMessage(DataObject.PLAY,
+									new Object[] {card, won});
 						} else {
-							GamePanel.this.client.sendMessage(DataObject.PLAY, new Object[] {card, won, suit});
+							GamePanel.this.client.sendMessage(DataObject.PLAY,
+									new Object[] {card, won, suit});
 						}
 					}
 				}
@@ -191,13 +196,14 @@ public class GamePanel extends JFrame implements NetworkListener {
 			}
 			num4.setText(deck.getDeck().size() + " Cards");
 		}
-		draw = new JLabel(new ImageIcon(new ImageIcon(getClass().getResource("/cardback.png")).getImage()
-				.getScaledInstance(75, 105, Image.SCALE_DEFAULT)));
+		draw = new JLabel(new ImageIcon(new ImageIcon(getClass().getResource("/cardback.png"))
+				.getImage().getScaledInstance(75, 105, Image.SCALE_DEFAULT)));
 		draw.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (myTurn) {
 					if (players.get(pos).canPlay(GamePanel.this.top, suit)) {
-						int choice = JOptionPane.showConfirmDialog(GamePanel.this, "You can play a card. Do you still want to draw?",
+						int choice = JOptionPane.showConfirmDialog(GamePanel.this,
+								"You can play a card. Do you still want to draw?",
 								"Draw Card", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
 						if (choice == JOptionPane.YES_OPTION) {
 							client.sendMessage(DataObject.DRAW, new Object[] {true});
@@ -243,15 +249,17 @@ public class GamePanel extends JFrame implements NetworkListener {
 		game.add(middle, BorderLayout.CENTER);
 		game.add(pane, BorderLayout.SOUTH);
 		
-		messages = new JTextArea();
+		messages = new JTextArea("The game has started!\nThe top card is " + top.toString() + ".");
 		messages.setEditable(false);
+		messages.setLineWrap(true);
+		messages.setWrapStyleWord(true);
 		chat = new JScrollPane(messages);
-		chat.setAutoscrolls(true);
 		message = new JTextField();
 		message.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!message.getText().trim().equals("")) {
-					client.sendMessage(DataObject.MESSAGE, players.get(pos).getName(), message.getText().trim());
+					client.sendMessage(DataObject.MESSAGE, players.get(pos).getName(),
+							message.getText().trim());
 					message.setText("");
 				}
 			}
@@ -260,7 +268,8 @@ public class GamePanel extends JFrame implements NetworkListener {
 		send.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!message.getText().trim().equals("")) {
-					client.sendMessage(DataObject.MESSAGE, players.get(pos).getName(), message.getText().trim());
+					client.sendMessage(DataObject.MESSAGE, players.get(pos).getName(),
+							message.getText().trim());
 					message.setText("");
 				}
 			}
@@ -303,10 +312,27 @@ public class GamePanel extends JFrame implements NetworkListener {
 				if (top.isNine()) {
 					suit = (String) data.message[2];
 					playerTurn.setText(players.get(turn).getName() + "'s Turn, Must Play " + suit);
+					messages.append("\n" + players.get(prevTurn).getName() + " played "
+							+ top.toString() + " and declared " + suit + ".");
 				} else {
 					suit = null;
 					playerTurn.setText(players.get(turn).getName() + "'s Turn");
+					messages.append("\n" + players.get(prevTurn).getName() + " played "
+							+ top.toString() + ".");
+					if (top.isSkip()) {
+						int skipped = 0;
+						if ((prevTurn + 2) % players.size() == turn) {
+							skipped = (prevTurn + 1) % players.size();
+						} else {
+							skipped = (prevTurn - 1 + players.size()) % players.size();
+						}
+						messages.append("\n" + players.get(skipped).getName()
+								+ "'s turn has been skipped.");
+					} else if (top.isReverse()) {
+						messages.append("\nThe direction of play has been reversed.");
+					}
 				}
+				messages.setCaretPosition(messages.getDocument().getLength());
 				int numCards = players.get(prevTurn).getNumCards() - 1;
 				players.get(prevTurn).setNumCards(numCards);
 				if (prevTurn == 0) {
@@ -326,16 +352,19 @@ public class GamePanel extends JFrame implements NetworkListener {
 					playerTurn.setText(players.get(turn).getName() + "'s Turn");
 				}
 				if (prevTurn == pos) {
-					JOptionPane.showMessageDialog(this, "There are no more cards to be drawn. Your turn has been skipped.",
-							"Draw Card", JOptionPane.PLAIN_MESSAGE);
+					JOptionPane.showMessageDialog(this, "There are no more cards left in the draw pile. "
+							+ "Your turn has been skipped.", "Draw Card", JOptionPane.PLAIN_MESSAGE);
 				}
+				messages.append("\n" + players.get(prevTurn).getName() + " could not play a card "
+						+ "and their turn has been skipped.");
+				messages.setCaretPosition(messages.getDocument().getLength());
 			}
 			revalidate();
 			repaint();
 		} else if (data.messageType.equals(DataObject.DRAW)) {
 			if (data.message.length == 0) {
-				JOptionPane.showMessageDialog(this, "There are no more cards to be drawn. You must play a card.", "Draw Card",
-						JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(this, "There are no more cards to be drawn. "
+						+ "You must play a card.", "Draw Card", JOptionPane.PLAIN_MESSAGE);
 			} else {
 				Card card = (Card) data.message[0];
 				if (turn == pos) {
@@ -345,10 +374,11 @@ public class GamePanel extends JFrame implements NetworkListener {
 						public void mouseClicked(MouseEvent e) {
 							if (myTurn && card.canPlay(GamePanel.this.top, suit)) {
 								String suit = null;
-								if (card.isNine()) {
+								if (card.isNine() && players.get(pos).getNumCards() > 1) {
 									Object[] suits = {"CLUBS", "DIAMONDS", "HEARTS", "SPADES"};
-									suit = (String) JOptionPane.showInputDialog(GamePanel.this, "Choose the next suit:",
-											"Suit Picker", JOptionPane.PLAIN_MESSAGE, null, suits, suits[0]);
+									suit = (String) JOptionPane.showInputDialog(GamePanel.this,
+											"Choose the next suit:", "Suit Picker",
+											JOptionPane.PLAIN_MESSAGE, null, suits, suits[0]);
 									if (suit == null) {
 										return;
 									}
@@ -360,7 +390,8 @@ public class GamePanel extends JFrame implements NetworkListener {
 								if (suit == null) {
 									client.sendMessage(DataObject.PLAY, new Object[] {card, won});
 								} else {
-									client.sendMessage(DataObject.PLAY, new Object[] {card, won, suit});
+									client.sendMessage(DataObject.PLAY, new Object[] {card, won,
+											suit});
 								}
 							}
 						}
@@ -379,6 +410,8 @@ public class GamePanel extends JFrame implements NetworkListener {
 				} else {
 					num4.setText(numCards + " Cards");
 				}
+				messages.append("\n" + players.get(turn).getName() + " drew a card.");
+				messages.setCaretPosition(messages.getDocument().getLength());
 				revalidate();
 				repaint();
 			}
@@ -395,18 +428,19 @@ public class GamePanel extends JFrame implements NetworkListener {
 				num4.setText("0 Cards");
 			}
 			topLabel.setIcon(((Card) data.message[1]).getImage());
+			messages.append("\n" + players.get(turn).getName() + " played " + top.toString() + ".\n"
+					+ players.get(turn).getName() + " wins!");
+			messages.setCaretPosition(messages.getDocument().getLength());
 			revalidate();
 			repaint();
 		} else if(data.messageType.equals(DataObject.MESSAGE)) {
 			String name = (String) data.message[0];
-			if (!messages.getText().equals("")) {
-				messages.append("\n");
-			}
 			if (name.equals(players.get(pos).getName())) {
-				messages.append(name + " (you): " + (String) data.message[1]);
+				messages.append("\n" + name + " (you): " + (String) data.message[1]);
 			} else {
-				messages.append(name + ": " + (String) data.message[1]);
+				messages.append("\n" + name + ": " + (String) data.message[1]);
 			}
+			messages.setCaretPosition(messages.getDocument().getLength());
 		} else if (data.messageType.equals(DataObject.DISCONNECT)) {
 			setVisible(false);
 			main.backToMenu("A player disconnected. The server has been closed.");

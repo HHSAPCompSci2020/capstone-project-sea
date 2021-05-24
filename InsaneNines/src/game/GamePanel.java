@@ -128,7 +128,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 					}
 				}
 			});
-			cardLabel.setToolTipText(card.toString());
+			cardLabel.setToolTipText("Play Card: " + card.toString());
 			cards.add(cardLabel);
 		}
 		bottom = new JPanel();
@@ -396,7 +396,7 @@ public class GamePanel extends JFrame implements NetworkListener {
 							}
 						}
 					});
-					cardLabel.setToolTipText(card.toString());
+					cardLabel.setToolTipText("Play Card: " + card.toString());
 					cards.add(cardLabel, cardPos);
 				}
 				int numCards = players.get(turn).getNumCards() + 1;

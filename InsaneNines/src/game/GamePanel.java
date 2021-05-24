@@ -287,7 +287,6 @@ public class GamePanel extends JFrame implements NetworkListener {
 		add(chatArea, BorderLayout.EAST);
 		add(bottom, BorderLayout.SOUTH);
 		
-		setBackground(BACKGROUND_COLOR);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 		setSize(900, 400);

@@ -1,7 +1,6 @@
 package game;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -37,7 +36,6 @@ import network.NetworkListener;
  */
 public class GamePanel extends JFrame implements NetworkListener {
 	private static final long serialVersionUID = 9043093457846944651L;
-	private static final Color BACKGROUND_COLOR = Color.GREEN;
 	private JPanel game, middle, cards, area1, area2, area3, area4, area5, largeArea2, largeArea4,
 	chatArea, sendArea, bottom;
 	private JTextArea messages;
